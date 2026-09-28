@@ -871,9 +871,15 @@ function gotoItem(key, fromId){
   const id = sec ? 'sec-' + sec : `e-${key.split('-')[0]}-${key.split('-')[1]}`;
   const el = document.getElementById(id);
   if (!el) return;
+  const hiddenCard = sec ? null : CARD_OF.get(el);
+  if (hiddenCard && HIDDEN.has(hiddenCard.hiddenKey)){
+    if (!confirm('这条建议已隐藏，是否恢复并跳转？')) return;
+    restoreHidden(hiddenCard);
+  }
   if (!el.offsetParent){            // 目标被筛选藏起来了，先把筛选清掉再跳
     state.q = ''; for (const d of DIMS) state[d].clear();
     syncControls(); apply(); writeUrl();
+    if (!el.offsetParent){ showHiddenPanel(); return; }
   }
   // 把「从哪跳的」写进当前这条历史记录，再推一条新的，这样浏览器后退键和鼠标侧键
   // 能回到原处。记的是来源卡片的 id 而不只是滚动条位置——往回走时沿途卡片会被补
@@ -882,7 +888,7 @@ function gotoItem(key, fromId){
   // 地址栏写的不是 #sec-13 而是节里第一条的 #e-13-1：spy 一滚就会把 #sec-13 换成
   // 那个形状（刷新时也是），与其让用户看着 hash 自己变，不如从一开始就写成同一个
   // 形状——分享出去的链接也就和页面自己产生的链接对得上了。
-  const first = sec ? document.getElementById(`e-${sec}-1`) : null;
+  const first = sec ? (CARDS.find(card => card.e.sec === sec && !card.el.hidden)?.el || document.getElementById('e-' + sec + '-1')) : null;
   history.pushState(null, '', '#' + (first?.id || id));
   if (sec){
     scrollToEl(el, { align: 'start', flashEl: el.querySelector('.sec-h') || el, spyId: first?.id || id, renderEl: first || el });
@@ -1196,6 +1202,31 @@ function wire(){
     }
     apply(); toTop();
   }));
+
+  document.getElementById('list').addEventListener('click', ev => {
+    const button = ev.target.closest?.('.hide-item'); if (!button) return;
+    const card = CARD_OF.get(button.closest('.card')); if (!card) return;
+    HIDDEN.add(card.hiddenKey); saveHidden(); renderHiddenPanel();
+    if (location.hash === '#' + card.el.id)
+      history.replaceState(history.state, '', location.pathname + location.search);
+    apply(); spy();
+  });
+  document.getElementById('hidden-list').addEventListener('click', ev => {
+    const button = ev.target.closest?.('.restore-item'); if (!button) return;
+    const card = CARDS.find(item => item.hiddenKey === button.dataset.key);
+    if (card) restoreHidden(card);
+  });
+  document.getElementById('restore-all').addEventListener('click', () => {
+    if (!HIDDEN.size || !confirm('恢复全部隐藏的条目？')) return;
+    HIDDEN.clear(); saveHidden(); renderHiddenPanel(); apply();
+  });
+  document.getElementById('hidden-nav').addEventListener('click', () => {
+    setMenu(false); showHiddenPanel();
+  });
+  addEventListener('storage', ev => {
+    if (ev.key !== HIDDEN_STORAGE_KEY) return;
+    readHidden(); renderHiddenPanel(); apply();
+  });
   // 条目目录：点了就地滚过去，手机上先收起抽屉
   document.getElementById('f-sec').addEventListener('click', ev => {
     const a = ev.target.closest('a[data-go]'); if (!a) return;
@@ -1464,6 +1495,9 @@ document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !DM.mask
       let target = document.getElementById(location.hash.slice(1));
       // 别人分享过来的地址可能带着和 hash 冲突的筛选（老版本拼出来的 ?sec=8#e-11-1），
       // 这时按 hash 办：点链接就是要看那一条，筛选清掉。
+      if (target && !target.offsetParent && CARD_OF.get(target) && HIDDEN.has(CARD_OF.get(target).hiddenKey)){
+        showHiddenPanel(); return;
+      }
       if (target && !target.offsetParent){
         state.q = ''; for (const d of DIMS) state[d].clear();
         state.dispute = false; state.todo = false;
