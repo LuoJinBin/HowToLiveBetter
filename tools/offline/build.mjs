@@ -1,8 +1,8 @@
 // 把 index.html + README + book/*.md 打成一个自包含的 HTML：双击就能看，不用服务器、不用联网。
 // 用法：node tools/offline/build.mjs [输出路径]   默认输出 dist/HowToLiveBetter.html
 // 正文内联进 window.__CORPUS__，index.html 的 init() 认这个变量就不再发请求；
-// 站内相对链接改成线上地址，侧栏图片转成 data URI，其余一个字不动。
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+// 站内相对链接改成线上地址，其余正文保持不变。
+import { writeFileSync, mkdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { ROOT, REPO, SITE, read, gitCommit, buildStamp } from '../lib/book.mjs';
 
@@ -47,11 +47,6 @@ html = html
   .replaceAll('href="book/"', `href="${REPO}/tree/main/book"`)
   .replaceAll('<a class="title" href="./"', `<a class="title" href="${SITE}"`);
 
-// 侧栏图片转 data URI，否则离线打开是个裂图
-const ad = 'ads/mcyyy-side.webp';
-must(`src="${ad}"`, `侧栏图片 ${ad}`);
-const adData = readFileSync(resolve(ROOT, ad)).toString('base64');
-html = html.replace(`src="${ad}"`, `src="data:image/webp;base64,${adData}"`);
 
 // 页脚注明这是哪一版的离线副本
 const foot = '<div class="foot">';
