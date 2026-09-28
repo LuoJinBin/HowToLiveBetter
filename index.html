@@ -918,6 +918,62 @@ const LENS_LABEL = {'死亡率':'换寿命','金钱':'换钱','时间':'换时�
 /* ---------- 构建 DOM ---------- */
 const LABEL = { money:{'0':'不花钱','少':'花少量钱','多':'花不少钱'}, time:{'少':'顺手','中':'花几小时','多':'每天占时间'}, will:{'否':'不用毅力','些':'要一点毅力','是':'要很多毅力'} };
 let CARDS = [], BLOCKS = [];
+
+/* ---------- 持久化隐藏记录 ----------
+   按节号和条目标题保存，不使用可能因插入条目而变化的条号。 */
+const HIDDEN_STORAGE_KEY = 'howtolivebetter:hidden-items:v1';
+const HIDDEN = new Set();
+function entryHiddenKey(e){ return JSON.stringify([String(e.sec), e.title]); }
+function hiddenStorageWarning(){ document.getElementById('hidden-storage-warning').hidden = false; }
+function readHidden(){
+  try {
+    const saved = JSON.parse(localStorage.getItem(HIDDEN_STORAGE_KEY) || '[]');
+    if (!Array.isArray(saved)) throw new Error('invalid hidden-items data');
+    HIDDEN.clear();
+    for (const key of saved) if (typeof key === 'string') HIDDEN.add(key);
+  } catch (err) { hiddenStorageWarning(); }
+}
+function saveHidden(){
+  try { localStorage.setItem(HIDDEN_STORAGE_KEY, JSON.stringify([...HIDDEN])); }
+  catch (err) { hiddenStorageWarning(); }
+}
+function renderHiddenPanel(){
+  const list = document.getElementById('hidden-list');
+  const fragment = document.createDocumentFragment();
+  const saved = CARDS.filter(card => HIDDEN.has(card.hiddenKey));
+  for (const card of saved){
+    const row = document.createElement('div'); row.className = 'hidden-row';
+    const text = document.createElement('div'); text.className = 'hidden-row-text';
+    const meta = document.createElement('span'); meta.className = 'hidden-row-meta';
+    meta.textContent = '第 ' + card.e.sec + ' 节 · 第 ' + card.e.n + ' 条';
+    const title = document.createElement('strong'); title.className = 'hidden-row-title'; title.textContent = card.e.title;
+    text.append(meta, title);
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'restore-item';
+    button.textContent = '恢复'; button.dataset.key = card.hiddenKey;
+    button.setAttribute('aria-label', '恢复：' + card.e.title);
+    row.append(text, button); fragment.appendChild(row);
+  }
+  if (!saved.length){
+    const empty = document.createElement('p'); empty.className = 'hidden-empty';
+    empty.textContent = '暂无隐藏的条目。'; fragment.appendChild(empty);
+  }
+  list.replaceChildren(fragment);
+  document.getElementById('hidden-count').textContent = saved.length;
+  const count = document.getElementById('hidden-nav-count');
+  count.textContent = saved.length > 99 ? '99+' : String(saved.length);
+  count.hidden = saved.length === 0;
+  document.getElementById('hidden-nav').setAttribute('aria-label', '管理已隐藏的条目，共 ' + saved.length + ' 条');
+  document.getElementById('restore-all').hidden = saved.length === 0;
+}
+function restoreHidden(card){
+  if (!HIDDEN.delete(card.hiddenKey)) return;
+  saveHidden(); renderHiddenPanel(); apply();
+}
+function showHiddenPanel(){
+  const panel = document.getElementById('hidden-manage');
+  panel.open = true; panel.scrollIntoView({block:'start'});
+  panel.querySelector('summary').focus({preventScroll:true});
+}
 // 侧栏条目目录：卡片 id → 目录里那一行，节号 → 该节的目录块
 const TOC = new Map(), TOC_SEC = new Map();
 let TOC_ON = null, TOC_SELK = '';
@@ -995,6 +1051,7 @@ function build(sections){
           <div class="k">备注</div><div class="v note"></div>
         </div>
         <details class="src"><summary>来源<span class="cnt"></span></summary><div class="body"></div></details>`;
+      c.querySelector('.hide-item').setAttribute('aria-label', '隐藏：' + e.title);
       const badges = c.querySelector('.badges');
       const add = (cls, text) => { const t=document.createElement('span'); t.className='badge '+cls; t.textContent=text; badges.appendChild(t); };
       if (e.ratio) { const t = document.createElement('span'); t.className = 'badge r' + ({'极高':'3','高':'2','一般':'1'}[e.ratio]);
@@ -1007,7 +1064,7 @@ function build(sections){
       if (e.dispute) add('danger', '争议');
       if (e.todo) add('warn', '含待核实');
       block.appendChild(c);
-      const card = {e, el:c, key:null, vis:false, f:{t:c.querySelector('.t'), cost:c.querySelector('.cost'), human:c.querySelector('.human'), gain:c.querySelector('.gain'), note:c.querySelector('.note'), src:c.querySelector('.src .body'), srcN:c.querySelector('.src summary .cnt'), details:c.querySelector('.src')}};
+      const card = {e, el:c, hiddenKey:entryHiddenKey(e), key:null, vis:false, f:{t:c.querySelector('.t'), cost:c.querySelector('.cost'), human:c.querySelector('.human'), gain:c.querySelector('.gain'), note:c.querySelector('.note'), src:c.querySelector('.src .body'), srcN:c.querySelector('.src summary .cnt'), details:c.querySelector('.src')}};
       renderCard(card, [], '');
       CARDS.push(card); CARD_OF.set(c, card); CARD_IO.observe(c);
     }
@@ -1015,6 +1072,7 @@ function build(sections){
     BLOCKS.push({n:s.n, el:block, k:block.querySelector('.shown .k')});
   }
   document.getElementById('tot').textContent = CARDS.length;
+  renderHiddenPanel();
 }
 function buildGlossary(){
   const box = document.getElementById('gloss'); if (!GLOSS.length) { box.hidden = true; return; }
@@ -1075,7 +1133,7 @@ function apply(){
   let shown = 0, rerender = 0; const perSec = {};
   for (const card of CARDS){
     const {e, el} = card;
-    let ok = true;
+    let ok = !HIDDEN.has(card.hiddenKey);
     if (state.sec.size && !state.sec.has(e.sec)) ok = false;
     if (ok && state.ratio.size && !state.ratio.has(e.ratio)) ok = false;
     if (ok && state.lens.size && !state.lens.has(e.lens)) ok = false;
@@ -1096,6 +1154,9 @@ function apply(){
   for (const b of BLOCKS){ const n = perSec[b.n]||0; if (b.el.hidden !== (n === 0)) b.el.hidden = n === 0; b.k.textContent = n; }
   document.getElementById('cnt').textContent = shown;
   document.getElementById('empty').hidden = shown !== 0;
+  document.getElementById('empty-text').textContent = HIDDEN.size
+    ? '当前没有可见条目。可调整筛选，或从上方「已隐藏」恢复条目。'
+    : '没有匹配的条目。去掉一个筛选条件，或换个更短的关键词。';
   syncControls(); writeUrl(); tocSync(spyLast);
   PERF.log('apply', t0, `命中 ${shown} 条，重渲染 ${rerender} 张`);
 }
@@ -1393,6 +1454,7 @@ document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !DM.mask
     const sections = parseReadme(parts.join('\n\n'));
     if (!sections.length) throw new Error('empty');
     GLOSS = parseGlossary(md);
+    readHidden();
     PERF.log('解析正文', t1, files.length + ' 个文件');
     status.remove();
     const t2 = performance.now(); build(sections); PERF.log('建 DOM', t2, CARDS.length + ' 张卡');
