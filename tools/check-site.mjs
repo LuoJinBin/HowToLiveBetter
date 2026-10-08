@@ -52,6 +52,10 @@ assert(html.includes('id="filter-trigger"') && html.includes('aria-controls="fil
   html.includes('id="filter-backdrop"') && html.includes('id="active-filters"') &&
   html.includes('id="reading-resources"'), '筛选入口、状态汇总或阅读辅助缺失');
 
+assert(html.includes('id="personal-trigger"') && html.includes('id="personal-form"') &&
+  html.includes('id="personal-mode-switch"') && html.includes('id="personal-panel"') &&
+  html.includes('PERSON_STORAGE_KEY') && html.includes('PERSON.configured'),
+  '个性化设置必须完全可选且具备全部模式切换');
 const marker = '\n<script>\n/* ---------- 调试面板';
 const start = html.indexOf(marker), end = html.lastIndexOf('</script>');
 assert(start !== -1 && end > start, '找不到页面主脚本');
