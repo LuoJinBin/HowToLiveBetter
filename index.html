@@ -1283,6 +1283,142 @@ function showHiddenPanel(){
   panel.open = true; panel.scrollIntoView({block:'start'});
   panel.querySelector('summary').focus({preventScroll:true});
 }
+
+/* ---------- 我的阅读 v1（完全自愿；没设置时零筛除） ----------
+  元数据独立于 book/：上游新增条目没有标记时默认保留，绝不通过模糊关键词隐藏。
+  与旧版 HIDDEN 互不干涉；同一节插入条目时，手动覆盖按节号+标题匹配。 */
+const PERSON_STORAGE_KEY = 'howtolivebetter:personal:v1';
+const PERSON_ROLES = ['student','worker','freelance','business','parent','caregiver'];
+const PERSON_TOPICS = ['health','money','work','safety','life','travel'];
+const PERSON_TOPIC_BY_SECTION = {
+  '1':'safety','2':'health','3':'health','4':'work','5':'money','6':'money','7':'money','8':'safety','9':'safety',
+  '10':'life','11':'work','12':'work','13':'safety','14':'safety','15':'money','16':'health','17':'life','18':'life',
+  '19':'work','20':'life','21':'travel','22':'life','23':'work','24':'health','25':'life','26':'work','27':'health',
+  '28':'health','29':'health','30':'life','31':'work','32':'travel','33':'health','34':'health'
+};
+// 高置信度适用性规则：按上游的章节标题，而非全文关键字做判断。
+// 对法律、安全、急救和其他不确定内容不自动排除；父母/照护者可保留相关章节。
+const PERSON_KIDS_SECTIONS = new Set(['养孩子划不划算','刚出生的孩子怎么带','上学以后的孩子','怀孕和生产']);
+const PERSON_ELDER_SECTIONS = new Set(['家里有老人']);
+const PERSON_MALE_TITLES = new Set([
+ '十八岁那年 10 月 31 日前要做兵役登记；义务兵服现役就是两年',
+ '应征之后拒服兵役，两年内不准出境或升学复学，还进不了公务员和国企',
+ '大学生当兵最实的两块：学费每年补最高 20000 元，学籍保留两年、考研有专项计划'
+]);
+const PERSON_YOUTH_TITLES = new Set([
+ '先把门槛对一遍：十二条路的年龄和学历要求都是明文写死的',
+ '十八岁那年 10 月 31 日前要做兵役登记；义务兵服现役就是两年',
+ '应征之后拒服兵役，两年内不准出境或升学复学，还进不了公务员和国企',
+ '大学生当兵最实的两块：学费每年补最高 20000 元，学籍保留两年、考研有专项计划',
+ '高考填志愿那天就能锁定编制的两条路：公费师范生和定向医学生，代价是 6 年履约'
+]);
+function freshPersonal(){return {version:1,configured:false,mode:'all',sex:'',age:'',roles:[],topics:[],skipKids:false,skipElders:false,overrides:{}};}
+let PERSON = freshPersonal();
+function validPersonal(raw){
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw) || raw.version !== 1 || raw.configured !== true) return null;
+  if (!['','male','female'].includes(raw.sex) || !['','u18','18-24','25-34','35-49','50+'].includes(raw.age)) return null;
+  if (!Array.isArray(raw.roles) || !raw.roles.every(x=>PERSON_ROLES.includes(x)) ||
+      !Array.isArray(raw.topics) || !raw.topics.every(x=>PERSON_TOPICS.includes(x))) return null;
+  if (typeof raw.skipKids !== 'boolean' || typeof raw.skipElders !== 'boolean') return null;
+  if (raw.overrides === null || typeof raw.overrides !== 'object' || Array.isArray(raw.overrides)) return null;
+  const result=freshPersonal();
+  result.configured=true;result.mode=raw.mode==='my'?'my':'all';result.sex=raw.sex;result.age=raw.age;
+  result.roles=[...new Set(raw.roles)];result.topics=[...new Set(raw.topics)];
+  result.skipKids=raw.skipKids;result.skipElders=raw.skipElders;
+  const keys=Object.keys(raw.overrides);
+  if (keys.length > 2000) return null;
+  for (const key of keys){
+    if (key.length > 900 || !['keep','skip'].includes(raw.overrides[key])) return null;
+    result.overrides[key]=raw.overrides[key];
+  }
+  return result;
+}
+function loadPersonal(){
+  try {const raw=localStorage.getItem(PERSON_STORAGE_KEY); PERSON=raw?validPersonal(JSON.parse(raw))||freshPersonal():freshPersonal();}
+  catch (err){PERSON=freshPersonal();}
+}
+function persistPersonal(){
+  try {localStorage.setItem(PERSON_STORAGE_KEY, JSON.stringify(PERSON));return true;}
+  catch(err){document.getElementById('personal-message').textContent='无法保存到浏览器，本次设置可能在关闭页面后丢失。';return false;}
+}
+function personalMatches(card){
+  if (!PERSON.configured || PERSON.mode !== 'my') return true;
+  const manual=PERSON.overrides[card.hiddenKey];
+  if (manual==='keep') return true;
+  if (manual==='skip') return false;
+  const chapter=SECS.get(card.e.sec)?.title || '';
+  if (PERSON.skipKids && PERSON_KIDS_SECTIONS.has(chapter)) return false;
+  if (PERSON.skipElders && PERSON_ELDER_SECTIONS.has(chapter)) return false;
+  const parent=PERSON.roles.includes('parent');
+  if (PERSON.sex==='male' && chapter==='怀孕和生产' && !parent) return false;
+  if (PERSON.sex==='female' && PERSON_MALE_TITLES.has(card.e.title) && !parent) return false;
+  if (['35-49','50+'].includes(PERSON.age) && PERSON_YOUTH_TITLES.has(card.e.title) && !parent) return false;
+  return true; // 其他不确定条目及上游新增条目均保留
+}
+function fillPersonalForm(){
+  const form=document.getElementById('personal-form');
+  form.elements.sex.value=PERSON.sex;form.elements.age.value=PERSON.age;
+  form.querySelectorAll('input[name="roles"],input[name="topics"]').forEach(input=>{
+    input.checked=PERSON[input.name].includes(input.value);
+  });
+  document.getElementById('person-skip-kids').checked=PERSON.skipKids;
+  document.getElementById('person-skip-elders').checked=PERSON.skipElders;
+}
+function syncPersonalUI(){
+  document.body.classList.toggle('person-ready',PERSON.configured);
+  document.getElementById('personal-mode-switch').hidden=!PERSON.configured;
+  document.querySelectorAll('[data-person-mode]').forEach(b=>{
+    b.setAttribute('aria-pressed',String(b.dataset.personMode===(PERSON.configured?PERSON.mode:'all')));
+  });
+  document.getElementById('personal-random').hidden=!PERSON.configured||PERSON.mode!=='my';
+  const note=document.getElementById('personal-mode-note');
+  note.hidden=!PERSON.configured;
+  if(PERSON.configured)note.textContent=PERSON.mode==='my'?
+    '正在按你的设置暂时收起部分内容，随时可切回全部。兴趣只影响随机推荐。':
+    '已保存偏好；当前仍是完整阅读，切换到「我的阅读」才启用个人筛选。';
+  const trigger=document.getElementById('personal-trigger');
+  trigger.classList.toggle('configured',PERSON.configured);
+  document.querySelectorAll('.personal-card-menu').forEach(menu=>{
+    const card=CARD_OF.get(menu.closest('.card'));
+    if(card)menu.dataset.choice=PERSON.overrides[card.hiddenKey]||'auto';
+  });
+  renderPersonalExceptions();
+}
+function renderPersonalExceptions(){
+  const box=document.getElementById('personal-exceptions'),list=document.getElementById('personal-exceptions-list');
+  list.replaceChildren();const entries=Object.entries(PERSON.overrides);
+  box.hidden=!PERSON.configured||entries.length===0;
+  document.getElementById('personal-exceptions-count').textContent=entries.length;
+  for(const [key,value] of entries){
+    let title=key;try{title=JSON.parse(key)[1]||key;}catch(e){}
+    const row=document.createElement('div');row.className='personal-exception';
+    const label=document.createElement('span');label.textContent=(value==='keep'?'总是显示 · ':'暂时略过 · ')+title;
+    const reset=document.createElement('button');reset.type='button';reset.textContent='撤销';reset.dataset.personKey=key;
+    row.append(label,reset);list.appendChild(row);
+  }
+}
+function setPersonalMode(mode){
+  if (!PERSON.configured)return;
+  PERSON.mode=mode==='my'?'my':'all';persistPersonal();syncPersonalUI();apply();
+}
+function personalChooseRandom(){
+  if (!PERSON.configured || PERSON.mode!=='my')return;
+  const cards=CARDS.filter(c=>!c.el.hidden),available=cards.filter(c=>c!==PERSON.lastRandom);
+  const pool=available.length?available:cards;
+  if(!pool.length){document.getElementById('personal-mode-note').textContent='当前筛选下没有条目，试试放宽筛选条件。';return;}
+  const favored=pool.filter(c=>PERSON.topics.includes(PERSON_TOPIC_BY_SECTION[c.e.sec]));
+  const candidate=favored.length&&Math.random()<.75?favored:pool;
+  const picked=candidate[Math.floor(Math.random()*candidate.length)];
+  PERSON.lastRandom=picked;scrollToEl(picked.el);
+}
+function personalBackup(){
+  const data={format:'HowToLiveBetter-personal-v1',profile:{...PERSON,lastRandom:undefined},hidden:[...HIDDEN]};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='HowToLiveBetter-阅读设置.json';document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
 // 侧栏条目目录：卡片 id → 目录里那一行，节号 → 该节的目录块
 const TOC = new Map(), TOC_SEC = new Map();
 let TOC_ON = null, TOC_SELK = '';
@@ -1491,7 +1627,7 @@ function apply(){
   let shown = 0, rerender = 0; const perSec = {};
   for (const card of CARDS){
     const {e, el} = card;
-    let ok = !HIDDEN.has(card.hiddenKey);
+    let ok = !HIDDEN.has(card.hiddenKey) && personalMatches(card);
     if (state.sec.size && !state.sec.has(e.sec)) ok = false;
     if (ok && state.ratio.size && !state.ratio.has(e.ratio)) ok = false;
     if (ok && state.lens.size && !state.lens.has(e.lens)) ok = false;
@@ -1512,9 +1648,11 @@ function apply(){
   for (const b of BLOCKS){ const n = perSec[b.n]||0; if (b.el.hidden !== (n === 0)) b.el.hidden = n === 0; b.k.textContent = n; }
   document.getElementById('cnt').textContent = shown;
   document.getElementById('empty').hidden = shown !== 0;
-  document.getElementById('empty-text').textContent = HIDDEN.size
-    ? '当前没有可见条目。可调整筛选，或从上方「已隐藏」恢复条目。'
-    : '没有匹配的条目。去掉一个筛选条件，或换个更短的关键词。';
+  document.getElementById('empty-text').textContent =
+    PERSON.configured && PERSON.mode==='my'
+      ? '我的阅读下没有匹配项。可以调整设置，或者切换到「全部内容」。'
+      : HIDDEN.size ? '当前没有可见条目。可调整筛选，或从上方「已隐藏」恢复条目。'
+      : '没有匹配的条目。去掉一个筛选条件，或换个更短的关键词。';
   syncControls(); syncFilterSummary(shown); writeUrl(); tocSync(spyLast);
   PERF.log('apply', t0, `命中 ${shown} 条，重渲染 ${rerender} 张`);
 }
@@ -1860,10 +1998,11 @@ document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !DM.mask
     if (!sections.length) throw new Error('empty');
     GLOSS = parseGlossary(md);
     readHidden();
+    loadPersonal();
     PERF.log('解析正文', t1, files.length + ' 个文件');
     status.remove();
     const t2 = performance.now(); build(sections); PERF.log('建 DOM', t2, CARDS.length + ' 张卡');
-    buildGlossary(); readUrl(); wire(); apply();
+    buildGlossary(); readUrl(); wire(); syncPersonalUI(); apply();
     PERF.mark(`DOM 节点 ${document.getElementsByTagName('*').length}，术语 ${GLOSS.length}`);
     if (location.hash){
       let target = document.getElementById(location.hash.slice(1));
