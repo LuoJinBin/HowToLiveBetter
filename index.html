@@ -1444,7 +1444,11 @@ function personalChooseRandom(){
   const cards=CARDS.filter(c=>!c.el.hidden),available=cards.filter(c=>c!==PERSON_LAST_RANDOM);
   const pool=available.length?available:cards;
   if(!pool.length){document.getElementById('personal-mode-note').textContent='当前筛选下没有条目，试试放宽筛选条件。';return;}
-  const favored=pool.filter(c=>PERSON.topics.includes(PERSON_TOPIC_BY_SECTION[c.e.sec]));
+  // 生活状态也仅用于随机阅读偏好，不能据此推断“不适用”并隐藏条目。
+  const roleTopics={student:['work'],worker:['work','money'],freelance:['work','money'],
+    business:['work','money'],parent:['life','health'],caregiver:['life','health']};
+  const preferred=new Set([...PERSON.topics,...PERSON.roles.flatMap(role=>roleTopics[role]||[])]);
+  const favored=pool.filter(c=>preferred.has(PERSON_TOPIC_BY_SECTION[c.e.sec]));
   const candidate=favored.length&&Math.random()<.75?favored:pool;
   const picked=candidate[Math.floor(Math.random()*candidate.length)];
   PERSON_LAST_RANDOM=picked;scrollToEl(picked.el);
