@@ -1673,10 +1673,99 @@ function wire(){
     if (on) document.getElementById('filter-close').focus();
     else if (panel.contains(document.activeElement)) filterButton.focus();
   };
-  filterButton.addEventListener('click', () => setFilter(!panel.classList.contains('open')));
+  filterButton.addEventListener('click', () => {if(document.getElementById('personal-panel').classList.contains('open'))setPersonalPanel(false);setFilter(!panel.classList.contains('open'));});
   document.getElementById('filter-close').addEventListener('click', () => setFilter(false));
   document.getElementById('filter-done').addEventListener('click', () => setFilter(false));
   backdrop.addEventListener('click', () => setFilter(false));
+
+  /* 用户主动操作之前：不改浏览模式、不访问个人资料、不显示设置向导。 */
+  const personalPanel=document.getElementById('personal-panel');
+  const personalBackdrop=document.getElementById('personal-backdrop');
+  const personalButton=document.getElementById('personal-trigger');
+  const setPersonalPanel=on=>{
+    if(on){setMenu(false);setFilter(false);fillPersonalForm();}
+    personalPanel.classList.toggle('open',on);
+    personalPanel.inert=!on;personalPanel.setAttribute('aria-hidden',String(!on));
+    personalButton.setAttribute('aria-expanded',String(on));
+    personalBackdrop.hidden=!on;
+    document.body.classList.toggle('filter-open',on);
+    if(on)document.getElementById('personal-close').focus();
+    else if(personalPanel.contains(document.activeElement))personalButton.focus();
+  };
+  personalButton.addEventListener('click',()=>setPersonalPanel(!personalPanel.classList.contains('open')));
+  personalBackdrop.addEventListener('click',()=>setPersonalPanel(false));
+  document.getElementById('personal-close').addEventListener('click',()=>setPersonalPanel(false));
+  personalPanel.addEventListener('keydown',ev=>{
+    if(ev.key==='Escape'){ev.preventDefault();setPersonalPanel(false);return;}
+    if(ev.key!=='Tab')return;
+    const buttons=[...personalPanel.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled])')]
+      .filter(x=>x.getClientRects().length&&!x.closest('[hidden]'));
+    if(!buttons.length)return;
+    if(ev.shiftKey&&document.activeElement===buttons[0]){ev.preventDefault();buttons[buttons.length-1].focus();}
+    else if(!ev.shiftKey&&document.activeElement===buttons[buttons.length-1]){ev.preventDefault();buttons[0].focus();}
+  });
+  document.getElementById('personal-save').addEventListener('click',()=>{
+    const form=document.getElementById('personal-form');
+    const next=freshPersonal();
+    next.configured=true;
+    next.mode=PERSON.configured?PERSON.mode:'all'; // 首次保存不会悄悄启用个性化
+    next.sex=form.elements.sex.value;next.age=form.elements.age.value;
+    for(const group of ['roles','topics'])next[group]=[...form.querySelectorAll('input[name="'+group+'"]:checked')].map(x=>x.value);
+    next.skipKids=document.getElementById('person-skip-kids').checked;
+    next.skipElders=document.getElementById('person-skip-elders').checked;
+    next.overrides={...PERSON.overrides};
+    const validated=validPersonal(next);
+    if(!validated){document.getElementById('personal-message').textContent='设置格式错误，请重新检查。';return;}
+    PERSON=validated;
+    const stored=persistPersonal();syncPersonalUI();apply();
+    if(stored)setPersonalPanel(false);
+  });
+  document.getElementById('personal-clear').addEventListener('click',()=>{
+    if(!PERSON.configured)return;
+    if(!confirm('清除我的阅读设置？这不会影响原来手动隐藏的条目。'))return;
+    try{localStorage.removeItem(PERSON_STORAGE_KEY);}catch(e){}
+    PERSON=freshPersonal();syncPersonalUI();apply();setPersonalPanel(false);
+  });
+  document.getElementById('personal-mode-switch').addEventListener('click',ev=>{
+    const b=ev.target.closest('button[data-person-mode]');if(b)setPersonalMode(b.dataset.personMode);
+  });
+  document.getElementById('personal-random').addEventListener('click',personalChooseRandom);
+  document.getElementById('list').addEventListener('click',ev=>{
+    const b=ev.target.closest('button[data-person-rule]');if(!b||!PERSON.configured)return;
+    const menu=b.closest('.personal-card-menu'),card=CARD_OF.get(b.closest('.card'));
+    if(!card)return;
+    const value=b.dataset.personRule;
+    if(value==='auto')delete PERSON.overrides[card.hiddenKey];
+    else if(value==='keep'||value==='skip')PERSON.overrides[card.hiddenKey]=value;
+    menu.open=false;persistPersonal();syncPersonalUI();apply();
+  });
+  document.getElementById('personal-exceptions-list').addEventListener('click',ev=>{
+    const b=ev.target.closest('button[data-person-key]');if(!b)return;
+    delete PERSON.overrides[b.dataset.personKey];
+    persistPersonal();syncPersonalUI();apply();
+  });
+  document.getElementById('personal-export').addEventListener('click',personalBackup);
+  document.getElementById('personal-import-button').addEventListener('click',()=>document.getElementById('personal-import').click());
+  document.getElementById('personal-import').addEventListener('change',async ev=>{
+    const file=ev.target.files?.[0];ev.target.value='';if(!file)return;
+    const message=document.getElementById('personal-message');
+    if(file.size>512*1024){message.textContent='文件过大，请选用本站导出的设置文件。';return;}
+    try{
+      const obj=JSON.parse(await file.text());
+      if(obj?.format!=='HowToLiveBetter-personal-v1'||!Array.isArray(obj.hidden)||obj.hidden.length>5000||
+         !obj.hidden.every(x=>typeof x==='string'&&x.length<900))throw new Error('invalid format');
+      const profile=validPersonal(obj.profile);if(!profile)throw new Error('invalid profile');
+      if(!confirm('导入会替换当前个人设置和手动隐藏记录。确认继续？'))return;
+      PERSON=profile;HIDDEN.clear();for(const k of obj.hidden)HIDDEN.add(k);
+      saveHidden();persistPersonal();renderHiddenPanel();syncPersonalUI();apply();fillPersonalForm();
+      message.textContent='已导入设置和隐藏记录。';
+    }catch(e){message.textContent='文件格式不正确，未修改任何设置。';}
+  });
+  addEventListener('storage',ev=>{
+    if(ev.key!==PERSON_STORAGE_KEY)return;
+    loadPersonal();syncPersonalUI();apply();
+  });
+
   // 在抽屉内保持键盘焦点，不让 Tab 跑到遮罩后的页面。
   panel.addEventListener('keydown', event => {
     if (event.key === 'Escape'){event.preventDefault();setFilter(false);return;}
@@ -1728,7 +1817,7 @@ function wire(){
     HIDDEN.clear(); saveHidden(); renderHiddenPanel(); apply();
   });
   document.getElementById('hidden-nav').addEventListener('click', () => {
-    setMenu(false); setFilter(false); showHiddenPanel();
+    setMenu(false); setFilter(false); setPersonalPanel(false); showHiddenPanel();
   });
   addEventListener('storage', ev => {
     if (ev.key !== HIDDEN_STORAGE_KEY) return;
@@ -1756,8 +1845,8 @@ function wire(){
   document.getElementById('reset').addEventListener('click', reset);
   document.getElementById('reset2').addEventListener('click', reset);
   document.addEventListener('keydown', e => {
-    if (e.key === '/' && !panel.classList.contains('open') && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); document.getElementById('q').focus(); }
-    if (e.key === 'Escape') { if (document.activeElement.id === 'q') document.activeElement.blur(); setFilter(false); setMenu(false); }
+    if (e.key === '/' && !panel.classList.contains('open') && !personalPanel.classList.contains('open') && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) { e.preventDefault(); document.getElementById('q').focus(); }
+    if (e.key === 'Escape') { if (document.activeElement.id === 'q') document.activeElement.blur(); setPersonalPanel(false); setFilter(false); setMenu(false); }
   });
   // 术语弹层
   const pop = document.getElementById('pop');
@@ -1769,7 +1858,7 @@ function wire(){
   document.addEventListener('keydown', e => { if (e.key === 'Enter' && document.activeElement.matches?.('abbr.term')) showTerm(document.activeElement); });
   addEventListener('scroll', () => { pop.hidden = true; }, {passive:true});
   // 侧栏（移动端抽屉）
-  mb.addEventListener('click', () => {setFilter(false);setMenu(!sb.classList.contains('open'));});
+  mb.addEventListener('click', () => {setPersonalPanel(false);setFilter(false);setMenu(!sb.classList.contains('open'));});
   bd.addEventListener('click', () => setMenu(false));
   // 深色模式
   document.getElementById('theme').addEventListener('click', () => {
