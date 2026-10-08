@@ -1179,6 +1179,13 @@ function gotoItem(key, fromId){
     if (!confirm('这条建议已隐藏，是否恢复并跳转？')) return;
     restoreHidden(hiddenCard);
   }
+  // 跳转引用优先于个人偏好：临时切至全部内容，不修改已保存的阅读模式。
+  const personalBlocked = PERSON.configured && PERSON.mode === 'my' &&
+    (hiddenCard ? !personalMatches(hiddenCard) :
+     !!sec && CARDS.some(c=>c.e.sec===sec && !HIDDEN.has(c.hiddenKey) && !personalMatches(c)));
+  if (!el.offsetParent && personalBlocked){
+    PERSON.mode='all';syncPersonalUI();apply();
+  }
   if (!el.offsetParent){            // 目标被筛选藏起来了，先把筛选清掉再跳
     state.q = ''; for (const d of DIMS) state[d].clear();
     syncControls(); apply(); writeUrl();
@@ -2132,6 +2139,11 @@ document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !DM.mask
       // 这时按 hash 办：点链接就是要看那一条，筛选清掉。
       if (target && !target.offsetParent && CARD_OF.get(target) && HIDDEN.has(CARD_OF.get(target).hiddenKey)){
         showHiddenPanel(); return;
+      }
+      if (target && !target.offsetParent && PERSON.configured && PERSON.mode==='my' &&
+          ((CARD_OF.get(target) && !personalMatches(CARD_OF.get(target))) ||
+           (target.dataset?.sec && CARDS.some(c=>c.e.sec===target.dataset.sec && !personalMatches(c))))){
+        PERSON.mode='all';syncPersonalUI();apply(); // 分享直达时临时展示完整内容
       }
       if (target && !target.offsetParent){
         state.q = ''; for (const d of DIMS) state[d].clear();
