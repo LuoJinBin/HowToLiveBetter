@@ -1312,8 +1312,34 @@ const PERSON_YOUTH_TITLES = new Set([
  '大学生当兵最实的两块：学费每年补最高 20000 元，学籍保留两年、考研有专项计划',
  '高考填志愿那天就能锁定编制的两条路：公费师范生和定向医学生，代价是 6 年履约'
 ]);
+const PERSON_FEMALE_TITLES=new Set([
+ '女性接种 HPV 疫苗，越早越好',
+ '女性 40 岁起做乳腺癌筛查，每两年一次钼靶',
+ '30 岁以上女性做宫颈癌筛查，优先 HPV 检测',
+ '65 岁以上的女性去做一次双能 X 线骨密度检查，绝经后有骨质疏松危险因素的不用等到 65 岁',
+ '绝经前后潮热盗汗影响到生活，就去妇科评估激素治疗，别硬扛也别自己买药，更别拿它防心脏病'
+]);
+const PERSON_MALE_HEALTH_TITLES=new Set([
+ '勃起功能出了问题，先去查心血管，别当成单纯的「那方面的事」',
+ '减重、戒烟、把血压血糖控住，勃起功能能跟着好转',
+ '有高危性行为的男男性行为者，去艾滋病定点医院问暴露前预防药，按时吃能少感染七成以上'
+]);
+// 只对有明确年龄下限的标题做保守判断。年龄段覆盖该门槛则不筛除。
+const PERSON_AGE_MIN=new Map([
+ ['35 岁以后只要超重，就去查一次空腹血糖，正常也每三年再查',35],
+ ['女性 40 岁起做乳腺癌筛查，每两年一次钼靶',40],
+ ['30 岁以上女性做宫颈癌筛查，优先 HPV 检测',30],
+ ['45 到 50 岁起做结直肠癌筛查，做查大便隐血的粪便免疫化学检测或者肠镜',45],
+ ['50 岁以后打带状疱疹疫苗',50],
+ ['65 岁以上打肺炎球菌疫苗',65],
+ ['60 岁以上练平衡和腿部力量，改造家里的浴室和楼梯',60],
+ ['65 岁以上的女性去做一次双能 X 线骨密度检查，绝经后有骨质疏松危险因素的不用等到 65 岁',65]
+]);
+const PERSON_AGE_MAX={'u18':17,'18-24':24,'25-34':34,'35-49':49};
+// 仅「确实还没到建议的年龄」才暂时收起；照顾老人、孩子的人例外。
 function freshPersonal(){return {version:1,configured:false,mode:'all',sex:'',age:'',roles:[],topics:[],skipKids:false,skipElders:false,overrides:{}};}
 let PERSON = freshPersonal();
+let PERSON_LAST_RANDOM = null;
 function validPersonal(raw){
   if (!raw || typeof raw !== 'object' || Array.isArray(raw) || raw.version !== 1 || raw.configured !== true) return null;
   if (!['','male','female'].includes(raw.sex) || !['','u18','18-24','25-34','35-49','50+'].includes(raw.age)) return null;
@@ -1328,7 +1354,10 @@ function validPersonal(raw){
   const keys=Object.keys(raw.overrides);
   if (keys.length > 2000) return null;
   for (const key of keys){
-    if (key.length > 900 || !['keep','skip'].includes(raw.overrides[key])) return null;
+    let parsed;try{parsed=JSON.parse(key);}catch(e){return null;}
+    if(key.length > 900 || !Array.isArray(parsed) || parsed.length!==2 ||
+       !/^\d{1,3}$/.test(String(parsed[0])) || typeof parsed[1]!=='string' ||
+       !['keep','skip'].includes(raw.overrides[key]))return null;
     result.overrides[key]=raw.overrides[key];
   }
   return result;
@@ -1350,9 +1379,11 @@ function personalMatches(card){
   if (PERSON.skipKids && PERSON_KIDS_SECTIONS.has(chapter)) return false;
   if (PERSON.skipElders && PERSON_ELDER_SECTIONS.has(chapter)) return false;
   const parent=PERSON.roles.includes('parent');
-  if (PERSON.sex==='male' && chapter==='怀孕和生产' && !parent) return false;
-  if (PERSON.sex==='female' && PERSON_MALE_TITLES.has(card.e.title) && !parent) return false;
+  if (PERSON.sex==='male' && (chapter==='怀孕和生产'||PERSON_FEMALE_TITLES.has(card.e.title)) && !parent && !PERSON.roles.includes('caregiver')) return false;
+  if (PERSON.sex==='female' && (PERSON_MALE_TITLES.has(card.e.title)||PERSON_MALE_HEALTH_TITLES.has(card.e.title)) && !PERSON.roles.includes('caregiver')) return false;
   if (['35-49','50+'].includes(PERSON.age) && PERSON_YOUTH_TITLES.has(card.e.title) && !parent) return false;
+  const minAge=PERSON_AGE_MIN.get(card.e.title);
+  if (minAge && PERSON_AGE_MAX[PERSON.age]<minAge && !parent && !PERSON.roles.includes('caregiver')) return false;
   return true; // 其他不确定条目及上游新增条目均保留
 }
 function fillPersonalForm(){
@@ -1403,16 +1434,16 @@ function setPersonalMode(mode){
 }
 function personalChooseRandom(){
   if (!PERSON.configured || PERSON.mode!=='my')return;
-  const cards=CARDS.filter(c=>!c.el.hidden),available=cards.filter(c=>c!==PERSON.lastRandom);
+  const cards=CARDS.filter(c=>!c.el.hidden),available=cards.filter(c=>c!==PERSON_LAST_RANDOM);
   const pool=available.length?available:cards;
   if(!pool.length){document.getElementById('personal-mode-note').textContent='当前筛选下没有条目，试试放宽筛选条件。';return;}
   const favored=pool.filter(c=>PERSON.topics.includes(PERSON_TOPIC_BY_SECTION[c.e.sec]));
   const candidate=favored.length&&Math.random()<.75?favored:pool;
   const picked=candidate[Math.floor(Math.random()*candidate.length)];
-  PERSON.lastRandom=picked;scrollToEl(picked.el);
+  PERSON_LAST_RANDOM=picked;scrollToEl(picked.el);
 }
 function personalBackup(){
-  const data={format:'HowToLiveBetter-personal-v1',profile:{...PERSON,lastRandom:undefined},hidden:[...HIDDEN]};
+  const data={format:'HowToLiveBetter-personal-v1',profile:PERSON,hidden:[...HIDDEN]};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download='HowToLiveBetter-阅读设置.json';document.body.appendChild(a);a.click();a.remove();
