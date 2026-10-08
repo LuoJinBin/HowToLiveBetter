@@ -13,6 +13,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  actions: write
 
 concurrency:
   group: upstream-data-${{ github.ref }}
@@ -47,3 +49,8 @@ jobs:
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
             commit -m "content: sync upstream book and docs only"
           git push origin "HEAD:${GITHUB_REF_NAME}"
+          if [[ "$GITHUB_REF_NAME" == "main" ]]; then
+            echo "GITHUB_TOKEN 提交不会自动触发 Pages/电子书工作流，主动请求重新构建。"
+            GH_TOKEN="${{ github.token }}" gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds"
+            GH_TOKEN="${{ github.token }}" gh workflow run book.yml --ref main
+          fi
