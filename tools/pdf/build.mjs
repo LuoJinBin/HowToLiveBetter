@@ -6,7 +6,7 @@
 import { writeFileSync, mkdirSync, statSync } from 'node:fs';
 import { resolve, dirname, posix, basename } from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { ROOT, REPO, SITE, TITLE, read, readBook, gitCommit, buildStamp, stripBackLink } from '../lib/book.mjs';
+import { ROOT, REPO, SITE, UPSTREAM_REPO, TITLE, read, readBook, gitCommit, buildStamp, stripBackLink } from '../lib/book.mjs';
 
 const OUT = resolve(ROOT, process.argv[2] ?? 'dist/HowToLiveBetter.pdf');
 const WORK = resolve(ROOT, 'dist/pdf-build.md');
@@ -41,7 +41,7 @@ ${commitLine}- 最新版下载、在线检索、提意见：${REPO}
 
 正文里指向书内其他节的链接已改成书内跳转；指向核实记录、许可证这类没排进书的文件的链接改成了 GitHub 网址。
 
-全书以 Unlicense 发布，属于公有领域，可以随意复制、修改、分发。`;
+正文及资料来自 eternity4719 的高性价比人生指南（${UPSTREAM_REPO}），依照 CC BY 4.0 署名使用：https://creativecommons.org/licenses/by/4.0/ 。本站独立维护阅读界面和交互功能。`;
 }
 
 // ---------- 链接：书内的改成锚点，书外的改成绝对网址 ----------

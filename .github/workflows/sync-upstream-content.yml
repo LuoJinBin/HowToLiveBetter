@@ -6,10 +6,10 @@ on:
   push:
     branches:
       - main
-      - feature/upstream-data-sync
     paths:
       - .github/workflows/sync-upstream-content.yml
       - tools/sync-upstream-content.mjs
+      - tools/check-site.mjs
 
 permissions:
   contents: write
@@ -36,6 +36,7 @@ jobs:
         run: |
           node --check tools/sync-upstream-content.mjs
           node tools/sync-upstream-content.mjs "$RUNNER_TEMP/howtolivebetter-upstream"
+          node tools/check-site.mjs
 
       - name: Commit changed data only
         shell: bash

@@ -40,8 +40,15 @@ function replaceSection(local, source, name) {
   return local.slice(0, a) + source.slice(c, d) + local.slice(b);
 }
 let readme = read('README.md');
-for (const heading of ['这本书想回答的问题', '读懂数字（术语表）', '目录'])
+for (const heading of ['这本书想回答的问题', '证据分级', '性价比档', '读懂数字（术语表）', '目录'])
   readme = replaceSection(readme, sourceReadme, heading);
+// 「怎么读」中动态条数随上游更新，不覆盖本站自己维护的其他文案。
+for (const label of ['只想看结论最硬的', '只想看最值得做的']) {
+  const find = md => md.split('\n').find(line => line.startsWith('- **' + label + '**'));
+  const current = find(readme), updated = find(sourceReadme);
+  need(current && updated, 'README 动态统计段落缺失：' + label);
+  readme = readme.replace(current, updated);
+}
 
 const sourceCount = sourceReadme.match(/(\d+)\s*条建议/);
 need(sourceCount, '上游条目总数标识缺失');
