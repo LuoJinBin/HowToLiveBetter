@@ -17,6 +17,9 @@ jobs:
           set -euo pipefail
           command -v google-chrome || command -v chromium || exit 1
           BROWSER="$(command -v google-chrome || command -v chromium)"
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends fonts-noto-cjk >/dev/null
+          fc-cache -f >/dev/null
           python3 -m http.server 8765 >/tmp/reader-http.log 2>&1 &
           sleep 2
           "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1440,900 --virtual-time-budget=15000 --screenshot=/tmp/reading-desktop.png http://127.0.0.1:8765/ >/tmp/chrome-desktop.log 2>&1
@@ -31,3 +34,45 @@ jobs:
           base64 -w0 /tmp/reading-mobile.png
           echo
           echo 'UI_MOBILE_END'
+          # Only on this temporary CI checkout: exercise filter and hide/restore via the real browser.
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          injected="""<script>
+          window.addEventListener('load', () => setTimeout(() => {
+            const trigger = document.getElementById('filter-trigger');
+            const chip = document.querySelector('[data-dim="grade"] [data-v="A"]');
+            const initial = Number(document.getElementById('cnt').textContent);
+            trigger.click();
+            const opened = document.getElementById('filter-panel').classList.contains('open');
+            chip.click();
+            const reduced = Number(document.getElementById('cnt').textContent);
+            const active = chip.getAttribute('aria-pressed') === 'true' && !document.getElementById('filter-count').hidden;
+            document.getElementById('filter-done').click();
+            const closed = !document.getElementById('filter-panel').classList.contains('open');
+            const first = [...document.querySelectorAll('.card')].find(el => !el.hidden);
+            if (first) first.querySelector('.hide-item').click();
+            const saved = JSON.parse(localStorage.getItem('howtolivebetter:hidden-items:v1') || '[]');
+            const hasSaved = saved.length === 1;
+            const restore = document.querySelector('#hidden-list .restore-item');
+            if (restore) restore.click();
+            const recovered = JSON.parse(localStorage.getItem('howtolivebetter:hidden-items:v1') || '[]').length === 0;
+            document.body.dataset.uiQa = [opened,active,closed,hasSaved,recovered,initial > reduced && reduced > 0].every(Boolean) ? 'PASS' : 'FAIL';
+            trigger.click();
+          }, 1200));
+          </script>"""
+          p.write_text(s.replace('</body>', injected+'</body>'))
+          PY
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1440,900 --virtual-time-budget=16000 --screenshot=/tmp/reading-filters.png http://127.0.0.1:8765/ >/tmp/chrome-filters.log 2>&1
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=16000 --dump-dom http://127.0.0.1:8765/ > /tmp/ui-dom.txt 2>/dev/null
+          if ! grep -q 'data-ui-qa="PASS"' /tmp/ui-dom.txt; then
+            echo 'UI INTERACTION CHECK FAILED'
+            grep -o 'data-ui-qa="[^"]*"' /tmp/ui-dom.txt || true
+            exit 1
+          fi
+          echo 'UI_INTERACTION_PASS'
+          echo 'UI_FILTERS_BEGIN'
+          base64 -w0 /tmp/reading-filters.png
+          echo
+          echo 'UI_FILTERS_END'
