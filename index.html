@@ -1375,7 +1375,7 @@ function personalMatches(card){
   const manual=PERSON.overrides[card.hiddenKey];
   if (manual==='keep') return true;
   if (manual==='skip') return false;
-  const chapter=SECS.get(card.e.sec)?.title || '';
+  const chapter=String(SECS.get(card.e.sec)?.title || '').split(/[：:]/)[0].trim();
   if (PERSON.skipKids && PERSON_KIDS_SECTIONS.has(chapter)) return false;
   if (PERSON.skipElders && PERSON_ELDER_SECTIONS.has(chapter)) return false;
   const parent=PERSON.roles.includes('parent');
@@ -1785,7 +1785,9 @@ function wire(){
       const obj=JSON.parse(await file.text());
       if(obj?.format!=='HowToLiveBetter-personal-v1'||!Array.isArray(obj.hidden)||obj.hidden.length>5000||
          !obj.hidden.every(x=>typeof x==='string'&&x.length<900))throw new Error('invalid format');
-      const profile=validPersonal(obj.profile);if(!profile)throw new Error('invalid profile');
+      const profile=obj.profile?.version===1&&obj.profile.configured===false?
+        freshPersonal():validPersonal(obj.profile);
+      if(!profile)throw new Error('invalid profile');
       if(!confirm('导入会替换当前个人设置和手动隐藏记录。确认继续？'))return;
       PERSON=profile;HIDDEN.clear();for(const k of obj.hidden)HIDDEN.add(k);
       saveHidden();persistPersonal();renderHiddenPanel();syncPersonalUI();apply();fillPersonalForm();
