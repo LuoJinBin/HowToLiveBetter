@@ -1,0 +1,49 @@
+name: 同步原项目正文（保留本站 DIY）
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 */6 * * *'
+  push:
+    branches:
+      - main
+      - feature/upstream-data-sync
+    paths:
+      - .github/workflows/sync-upstream-content.yml
+      - tools/sync-upstream-content.mjs
+
+permissions:
+  contents: write
+
+concurrency:
+  group: upstream-data-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this website
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Checkout upstream data
+        run: git clone --depth=1 https://github.com/eternity4719/HowToLiveBetter.git "$RUNNER_TEMP/howtolivebetter-upstream"
+
+      - name: Validate and sync only content
+        run: |
+          node --check tools/sync-upstream-content.mjs
+          node tools/sync-upstream-content.mjs "$RUNNER_TEMP/howtolivebetter-upstream"
+
+      - name: Commit changed data only
+        shell: bash
+        run: |
+          git add -A -- book/ docs/ README.md LICENSE-CONTENT
+          if git diff --cached --quiet; then
+            echo "正文、目录和许可未变化，不创建空提交"
+            exit 0
+          fi
+          git add UPSTREAM_SOURCE.md
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "content: sync upstream book and docs only"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
