@@ -5,7 +5,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { resolve, dirname, posix } from 'node:path';
 import { deflateRawSync } from 'node:zlib';
 import { Marked, Tokenizer } from 'marked';
-import { ROOT, REPO, SITE, TITLE, read, readBook, gitCommit, buildStamp, stripBackLink } from '../lib/book.mjs';
+import { ROOT, REPO, SITE, UPSTREAM_REPO, TITLE, read, readBook, gitCommit, buildStamp, stripBackLink } from '../lib/book.mjs';
 
 const OUT = resolve(ROOT, process.argv[2] ?? 'dist/HowToLiveBetter.epub');
 const RELEASE = `${REPO}/releases/download/epub-latest/HowToLiveBetter.epub`;
@@ -47,7 +47,7 @@ ${commitLine}
 
 正文里指向仓库内其他文件的链接已改成书内跳转；指向核实记录、许可证这类没收进书的文件的链接改成了 GitHub 网址。
 
-全书以 Unlicense 发布，属于公有领域，可以随意复制、修改、分发。`;
+正文及资料来自 eternity4719 的高性价比人生指南（${UPSTREAM_REPO}），依照 CC BY 4.0 署名使用：https://creativecommons.org/licenses/by/4.0/ 。本站独立维护阅读界面和交互功能。`;
 }
 
 // ---------- Markdown → XHTML ----------
@@ -172,8 +172,8 @@ const opf = `<?xml version="1.0" encoding="UTF-8"?>
 <dc:language>zh-CN</dc:language>
 <dc:creator>eternity4719</dc:creator>
 <dc:description>${esc(description)}</dc:description>
-<dc:source>${REPO}</dc:source>
-<dc:rights>Unlicense（公有领域）</dc:rights>
+<dc:source>${UPSTREAM_REPO}</dc:source>
+<dc:rights>正文及资料：CC BY 4.0</dc:rights>
 <dc:date>${NOW.toISOString().slice(0, 10)}</dc:date>
 <meta property="dcterms:modified">${modified}</meta>
 <meta name="cover" content="cover-img"/>
