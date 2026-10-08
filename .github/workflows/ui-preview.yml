@@ -1,0 +1,33 @@
+name: 临时视觉验收
+on:
+  pull_request:
+    paths:
+      - index.html
+      - .github/workflows/ui-preview.yml
+permissions:
+  contents: read
+jobs:
+  screenshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Capture reading layout screenshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v google-chrome || command -v chromium || exit 1
+          BROWSER="$(command -v google-chrome || command -v chromium)"
+          python3 -m http.server 8765 >/tmp/reader-http.log 2>&1 &
+          sleep 2
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1440,900 --virtual-time-budget=15000 --screenshot=/tmp/reading-desktop.png http://127.0.0.1:8765/ >/tmp/chrome-desktop.log 2>&1
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=390,844 --virtual-time-budget=15000 --screenshot=/tmp/reading-mobile.png http://127.0.0.1:8765/ >/tmp/chrome-mobile.log 2>&1
+          test -s /tmp/reading-desktop.png
+          test -s /tmp/reading-mobile.png
+          echo 'UI_DESKTOP_BEGIN'
+          base64 -w0 /tmp/reading-desktop.png
+          echo
+          echo 'UI_DESKTOP_END'
+          echo 'UI_MOBILE_BEGIN'
+          base64 -w0 /tmp/reading-mobile.png
+          echo
+          echo 'UI_MOBILE_END'
