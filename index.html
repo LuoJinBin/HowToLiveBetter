@@ -530,7 +530,7 @@ body.filter-open{overflow:hidden}
 
 <header class="nav">
   <div class="nav-in">
-    <button class="icon-btn menu-btn" id="menu" aria-label="打开筛选" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></button>
+    <button class="icon-btn menu-btn" id="menu" aria-label="打开章节目录" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></button>
     <a class="title" href="./"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>高性价比人生指南</span></a>
     <label class="search">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg>
@@ -1219,9 +1219,16 @@ function build(sections){
     const block = document.createElement('section'); block.className='sec-block'; block.dataset.sec = s.n; block.id = 'sec-'+s.n;
     block.innerHTML = `<div class="sec-h"><h2>${s.n}. ${esc(s.title)}</h2><span class="shown"><span class="k"></span> / ${s.entries.length}</span></div>`;
     CUR_SEC = s.n;
+    // 长篇章节说明按需展开，先把建议展示出来；短说明保持直接可读。
+    let introTarget = block;
+    if (s.intro.join('').length > 330){
+      const details = document.createElement('details'); details.className = 'chapter-note';
+      const summary = document.createElement('summary'); summary.textContent = '展开本章导读';
+      details.appendChild(summary); block.appendChild(details); introTarget = details;
+    }
     for (const para of s.intro){
       const p = document.createElement('p'); p.className = 'intro';
-      renderText(p, para, [], false); block.appendChild(p);
+      renderText(p, para, [], false); introTarget.appendChild(p);
     }
     for (const e of s.entries){
       const id = `e-${e.sec}-${e.n}`;
@@ -1294,6 +1301,43 @@ function syncControls(){
   document.getElementById('f-dispute').checked = state.dispute;
   document.getElementById('f-todo').checked = state.todo;
 }
+function syncFilterSummary(shown){
+  const active = document.getElementById('active-filters');
+  const fragment = document.createDocumentFragment();
+  let count = 0;
+  const names = {sec:'章节',ratio:'性价比',lens:'换回',grade:'证据',money:'花钱',time:'时间',will:'毅力'};
+  const labels = {money:{'0':'不花钱','少':'少','多':'多'},time:{'少':'顺手','中':'几小时','多':'每天占用'},will:{'否':'不用','些':'一点','是':'很多'},
+    lens:{'死亡率':'寿命','金钱':'钱','时间':'时间精力','自由':'人身自由'}};
+  function add(dim, val, title){
+    count++;
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'active-filter';
+    button.dataset.filterDim = dim; button.dataset.filterValue = val;
+    button.setAttribute('aria-label', '移除筛选：' + title);
+    const span = document.createElement('span'); span.textContent = title;
+    const cross = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    cross.setAttribute('viewBox', '0 0 24 24');cross.setAttribute('aria-hidden','true');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d','M18 6 6 18M6 6l12 12');cross.appendChild(path);
+    button.append(span, cross);fragment.appendChild(button);
+  }
+  for (const dim of DIMS){
+    for (const value of state[dim]){
+      let val = labels[dim]?.[value] || value;
+      if (dim === 'sec') val = SECS.get(value)?.title || '第 ' + value + ' 章';
+      add(dim,value,names[dim] + ' · ' + val);
+    }
+  }
+  if (state.dispute) add('dispute','1','有争议');
+  if (state.todo) add('todo','1','待核实');
+  if (count > 1){
+    const reset = document.createElement('button');reset.type='button';reset.className='active-filter-clear';
+    reset.dataset.filterDim='all';reset.textContent='清空筛选';fragment.appendChild(reset);
+  }
+  active.replaceChildren(fragment);active.hidden = count === 0;
+  const marker = document.getElementById('filter-count');
+  marker.textContent = count;marker.hidden = count === 0;
+  document.getElementById('filter-matches').textContent = shown;
+}
 // 文字只在搜索词变化时重渲染；筛选按钮只切换显隐，不碰卡片内容
 function renderCard(card, terms, key){
   const {e, f} = card;
@@ -1342,14 +1386,41 @@ function apply(){
   document.getElementById('empty-text').textContent = HIDDEN.size
     ? '当前没有可见条目。可调整筛选，或从上方「已隐藏」恢复条目。'
     : '没有匹配的条目。去掉一个筛选条件，或换个更短的关键词。';
-  syncControls(); writeUrl(); tocSync(spyLast);
+  syncControls(); syncFilterSummary(shown); writeUrl(); tocSync(spyLast);
   PERF.log('apply', t0, `命中 ${shown} 条，重渲染 ${rerender} 张`);
 }
 
 /* ---------- 事件 ---------- */
 function wire(){
   const sb = document.getElementById('sidebar'), bd = document.getElementById('backdrop'), mb = document.getElementById('menu');
+  const panel = document.getElementById('filter-panel'), backdrop = document.getElementById('filter-backdrop'), filterButton = document.getElementById('filter-trigger');
   const setMenu = (on) => { sb.classList.toggle('open', on); bd.classList.toggle('on', on); mb.setAttribute('aria-expanded', String(on)); };
+  const setFilter = on => {
+    if (on) setMenu(false);
+    panel.classList.toggle('open', on);
+    panel.inert = !on;
+    panel.setAttribute('aria-hidden', String(!on));
+    filterButton.setAttribute('aria-expanded', String(on));
+    backdrop.hidden = !on;
+    document.body.classList.toggle('filter-open', on);
+    if (on) document.getElementById('filter-close').focus();
+    else if (panel.contains(document.activeElement)) filterButton.focus();
+  };
+  filterButton.addEventListener('click', () => setFilter(!panel.classList.contains('open')));
+  document.getElementById('filter-close').addEventListener('click', () => setFilter(false));
+  document.getElementById('filter-done').addEventListener('click', () => setFilter(false));
+  backdrop.addEventListener('click', () => setFilter(false));
+  // 在抽屉内保持键盘焦点，不让 Tab 跑到遮罩后的页面。
+  panel.addEventListener('keydown', event => {
+    if (event.key === 'Escape'){event.preventDefault();setFilter(false);return;}
+    if (event.key !== 'Tab') return;
+    const focusables = [...panel.querySelectorAll('button:not([disabled]),input:not([disabled]),a[href]')]
+      .filter(el => el.getClientRects().length && !el.closest('[hidden]'));
+    if (!focusables.length) return;
+    const first = focusables[0], last = focusables[focusables.length-1];
+    if (event.shiftKey && document.activeElement === first){event.preventDefault();last.focus();}
+    else if (!event.shiftKey && document.activeElement === last){event.preventDefault();first.focus();}
+  });
   // 筛选变了就顺手让 spy 重算一次 hash：writeUrl 是无条件把旧 hash 拼回去的，
   // 而滚回顶部时页面若本来就在顶部不会触发 scroll，hash 会僵在一个已经被筛掉的
   // 条目上，拼出 ?sec=8#e-11-1 这种自相矛盾的地址。
@@ -1390,7 +1461,7 @@ function wire(){
     HIDDEN.clear(); saveHidden(); renderHiddenPanel(); apply();
   });
   document.getElementById('hidden-nav').addEventListener('click', () => {
-    setMenu(false); showHiddenPanel();
+    setMenu(false); setFilter(false); showHiddenPanel();
   });
   addEventListener('storage', ev => {
     if (ev.key !== HIDDEN_STORAGE_KEY) return;
@@ -1403,6 +1474,14 @@ function wire(){
   });
   document.getElementById('f-dispute').addEventListener('change', e => { state.dispute = e.target.checked; apply(); toTop(); });
   document.getElementById('f-todo').addEventListener('change', e => { state.todo = e.target.checked; apply(); toTop(); });
+  document.getElementById('active-filters').addEventListener('click', event => {
+    const button = event.target.closest('button[data-filter-dim]'); if (!button) return;
+    const dim = button.dataset.filterDim, value = button.dataset.filterValue;
+    if (dim === 'all'){state.q=''; for (const d of DIMS) state[d].clear();state.dispute=false;state.todo=false;}
+    else if (dim === 'dispute' || dim === 'todo') state[dim] = false;
+    else if (DIMS.includes(dim)) state[dim].delete(value);
+    apply();
+  });
   let tm; document.getElementById('q').addEventListener('input', e => {
     clearTimeout(tm); tm = setTimeout(() => { state.q = e.target.value.trim(); apply(); }, 120);
   });
@@ -1411,7 +1490,7 @@ function wire(){
   document.getElementById('reset2').addEventListener('click', reset);
   document.addEventListener('keydown', e => {
     if (e.key === '/' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); document.getElementById('q').focus(); }
-    if (e.key === 'Escape') { if (document.activeElement.id === 'q') document.activeElement.blur(); setMenu(false); }
+    if (e.key === 'Escape') { if (document.activeElement.id === 'q') document.activeElement.blur(); setFilter(false); setMenu(false); }
   });
   // 术语弹层
   const pop = document.getElementById('pop');
@@ -1423,7 +1502,7 @@ function wire(){
   document.addEventListener('keydown', e => { if (e.key === 'Enter' && document.activeElement.matches?.('abbr.term')) showTerm(document.activeElement); });
   addEventListener('scroll', () => { pop.hidden = true; }, {passive:true});
   // 侧栏（移动端抽屉）
-  mb.addEventListener('click', () => setMenu(!sb.classList.contains('open')));
+  mb.addEventListener('click', () => {setFilter(false);setMenu(!sb.classList.contains('open'));});
   bd.addEventListener('click', () => setMenu(false));
   // 深色模式
   document.getElementById('theme').addEventListener('click', () => {
