@@ -446,6 +446,8 @@ body.filter-open{overflow:hidden}
  .nav-in{padding:0 13px;gap:9px}
  .nav-r{gap:5px}
  .sidebar{padding:24px 12px 50px;width:min(310px,87vw)}
+ .title .logo{display:grid}
+ .title>span:last-child{display:none}
  .content{padding:calc(var(--nav-h) + 28px) clamp(18px,5vw,34px) 90px}
  .doc{max-width:880px}
  .doc-head{margin-bottom:27px}
@@ -648,7 +650,7 @@ body.filter-open{overflow:hidden}
       <details class="reading-resources" id="reading-resources">
         <summary><span>延伸阅读与术语解释</span><span class="resources-hint">按需展开</span></summary>
         <div class="resources-content">
-      <div class="doc-links">长文：<a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E9%81%87%E5%88%B0%E9%99%8C%E7%94%9F%E4%BA%BA%E5%87%BA%E4%BA%8B%E8%AF%A5%E4%B8%8D%E8%AF%A5%E5%81%9C.md">遇到陌生人出事该不该停</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E5%AE%B6%E5%BA%AD%E5%BA%94%E6%80%A5%E8%A3%85%E5%A4%87%E6%B8%85%E5%8D%95.md">家庭应急装备清单</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E7%BB%93%E5%A9%9A%E5%88%92%E4%B8%8D%E5%88%92%E7%AE%97.md">结婚划不划算</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E5%81%9A%E5%B9%B3%E5%8F%B0%E8%A6%81%E5%8A%9E%E5%93%AA%E4%BA%9B%E8%AF%81.md">做平台要办哪些证</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E7%94%9F%E7%89%A9%E9%92%9F%E5%92%8C%E5%A4%9C%E7%8F%AD.md">生物钟和夜班</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/tree/main/docs/%E6%A0%B8%E5%AE%9E%E8%AE%B0%E5%BD%95">来源核实记录</a></div>
+      <div class="doc-links">长文：<a href="README.md">完整目录与说明</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E9%81%87%E5%88%B0%E9%99%8C%E7%94%9F%E4%BA%BA%E5%87%BA%E4%BA%8B%E8%AF%A5%E4%B8%8D%E8%AF%A5%E5%81%9C.md">遇到陌生人出事该不该停</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E5%AE%B6%E5%BA%AD%E5%BA%94%E6%80%A5%E8%A3%85%E5%A4%87%E6%B8%85%E5%8D%95.md">家庭应急装备清单</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E7%BB%93%E5%A9%9A%E5%88%92%E4%B8%8D%E5%88%92%E7%AE%97.md">结婚划不划算</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E5%81%9A%E5%B9%B3%E5%8F%B0%E8%A6%81%E5%8A%9E%E5%93%AA%E4%BA%9B%E8%AF%81.md">做平台要办哪些证</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E7%94%9F%E7%89%A9%E9%92%9F%E5%92%8C%E5%A4%9C%E7%8F%AD.md">生物钟和夜班</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/tree/main/docs/%E6%A0%B8%E5%AE%9E%E8%AE%B0%E5%BD%95">来源核实记录</a></div>
       <details class="gloss" id="gloss"><summary>看不懂的缩写和名词</summary><p>正文里带虚线的词，点一下或把鼠标放上去就有解释。全表如下。</p><dl></dl></details>
         </div>
       </details>
@@ -1489,7 +1491,7 @@ function wire(){
   document.getElementById('reset').addEventListener('click', reset);
   document.getElementById('reset2').addEventListener('click', reset);
   document.addEventListener('keydown', e => {
-    if (e.key === '/' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); document.getElementById('q').focus(); }
+    if (e.key === '/' && !panel.classList.contains('open') && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); document.getElementById('q').focus(); }
     if (e.key === 'Escape') { if (document.activeElement.id === 'q') document.activeElement.blur(); setFilter(false); setMenu(false); }
   });
   // 术语弹层
