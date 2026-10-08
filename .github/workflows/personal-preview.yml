@@ -32,6 +32,17 @@ jobs:
             const tests=[];
             const check = (truth,label) => tests.push([Boolean(truth),label]);
             window.addEventListener('load',async()=>{
+              if(location.search.includes('profile-preview')){
+                for(let i=0;i<90;i++){if(cnt()>0)break;await delay(100);}
+                document.getElementById('personal-trigger').click();
+                document.getElementById('person-sex').value='male';
+                document.getElementById('person-age').value='18-24';
+                document.querySelector('input[name="roles"][value="worker"]').checked=true;
+                document.getElementById('personal-save').click();
+                document.getElementById('personal-trigger').click();
+                document.documentElement.dataset.personalPreview='READY';
+                return;
+              }
               try {
                 for(let i=0;i<90;i++){if(cnt()>0)break;await delay(100);}
                 const total=Number(document.getElementById('tot').textContent);
@@ -70,6 +81,16 @@ jobs:
                 document.getElementById('personal-clear').click();
                 check(cnt()===total&&!localStorage.getItem('howtolivebetter:personal:v1'),'clear preferences restores original browsing');
                 check(document.getElementById('personal-mode-switch').hidden,'mode toggle re-hidden when unset');
+                document.getElementById('personal-trigger').click();
+                const importer=document.getElementById('personal-import');
+                const importFile=new File([JSON.stringify({format:'HowToLiveBetter-personal-v1',profile:settings,hidden:[]})],'saved.json',{type:'application/json'});
+                Object.defineProperty(importer,'files',{configurable:true,value:[importFile]});
+                importer.dispatchEvent(new Event('change',{bubbles:true}));
+                await delay(150);
+                check(JSON.parse(localStorage.getItem('howtolivebetter:personal:v1')||'null')?.sex==='male' &&
+                  !document.getElementById('personal-mode-switch').hidden,'backup import restores preferences');
+                document.getElementById('personal-clear').click();
+                check(!localStorage.getItem('howtolivebetter:personal:v1'),'cleanup after backup import');
                 document.documentElement.dataset.personalQa=tests.every(x=>x[0])?'PASS':'FAIL';
                 document.documentElement.dataset.personalQaDetails=tests.filter(x=>!x[0]).map(x=>x[1]).join(',');
               } catch(err){
@@ -87,3 +108,13 @@ jobs:
           grep -o 'data-personal-qa-details="[^"]*"' /tmp/personal-test-dom.txt || true
           grep -q 'data-personal-qa="PASS"' /tmp/personal-test-dom.txt
           echo "PERSONAL_BROWSER_PASS"
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=20000 --window-size=1440,900 --screenshot=/tmp/person-desktop.png "http://127.0.0.1:8765/?profile-preview=1" >/tmp/person-preview-desktop.log 2>&1
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=20000 --window-size=390,844 --screenshot=/tmp/person-mobile.png "http://127.0.0.1:8765/?profile-preview=1" >/tmp/person-preview-mobile.log 2>&1
+          echo "PERSON_DESKTOP_IMAGE_BEGIN"
+          base64 -w0 /tmp/person-desktop.png
+          echo
+          echo "PERSON_DESKTOP_IMAGE_END"
+          echo "PERSON_MOBILE_IMAGE_BEGIN"
+          base64 -w0 /tmp/person-mobile.png
+          echo
+          echo "PERSON_MOBILE_IMAGE_END"
