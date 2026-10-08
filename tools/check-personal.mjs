@@ -10,7 +10,7 @@ const end=html.indexOf('// 侧栏条目目录：',start);
 const assert=(condition,message)=>{if(!condition)throw new Error('个性化检查失败：'+message);};
 assert(start>=0&&end>start,'个人规则代码缺失');
 const sections=new Map([['1',{title:'不要早死'}],['17',{title:'家里有老人'}],
- ['20',{title:'刚出生的孩子怎么带'}],['27',{title:'怀孕和生产'}],['31',{title:'十八岁之后有哪几条路'}],
+ ['20',{title:'刚出生的孩子怎么带：从出生到独立'}],['27',{title:'怀孕和生产：从发现怀孕到出院办证'}],['31',{title:'十八岁之后有哪几条路'}],
  ['40',{title:'新加入的章节'}]]);
 const store=new Map();
 const savedHidden=new Set(['["1","早已隐藏"]']);
