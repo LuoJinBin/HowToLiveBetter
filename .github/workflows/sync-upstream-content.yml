@@ -37,6 +37,7 @@ jobs:
           node --check tools/sync-upstream-content.mjs
           node tools/sync-upstream-content.mjs "$RUNNER_TEMP/howtolivebetter-upstream"
           node tools/check-site.mjs
+          node tools/check-personal.mjs
 
       - name: Commit changed data only
         shell: bash

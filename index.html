@@ -487,6 +487,61 @@ body.filter-open{overflow:hidden}
 }
 @media (prefers-reduced-motion:reduce){.filter-panel,.chapter-note>summary::before{transition:none!important}}
 
+
+/* 我的阅读：未设置时仅显示顶栏入口，完全不改变既有建议与筛选 */
+.personal-trigger{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--divider);border-radius:7px;padding:0 11px;height:37px;color:var(--t2);font-size:12.5px;font-weight:600;background:var(--bg-elv);white-space:nowrap}
+.personal-trigger svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.personal-trigger:hover,.personal-trigger[aria-expanded="true"]{color:var(--brand-1);border-color:var(--brand-3);background:var(--brand-soft)}
+.personal-backdrop{position:fixed;inset:0;z-index:59;background:rgba(14,25,20,.37);backdrop-filter:blur(2px)}
+.personal-panel{position:fixed;z-index:60;inset:0 0 0 auto;width:min(430px,100vw);display:flex;flex-direction:column;visibility:hidden;transform:translateX(101%);transition:transform .22s ease,visibility .22s;
+ background:var(--bg-elv);border-left:1px solid var(--divider);box-shadow:-12px 0 36px rgba(14,25,20,.13)}
+.personal-panel.open{transform:none;visibility:visible}
+.personal-panel-head{padding:26px 26px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--divider)}
+.personal-panel-head h2{margin:3px 0 0;font:600 23px/1.4 var(--serif)}
+.personal-panel-scroll{padding:18px 26px;flex:1;overflow:auto;overscroll-behavior:contain}
+.personal-help{margin:0 0 23px;font-size:13px;line-height:1.8;color:var(--t2)}
+.personal-field{border:0;border-top:1px solid var(--divider);margin:0;padding:18px 0;min-width:0}
+.personal-field>label:first-child,.personal-field legend{font-weight:650;color:var(--t1);font-size:13.5px;margin-bottom:10px;display:block;padding:0}
+.personal-field select{width:100%;height:39px;border:1px solid var(--divider);border-radius:6px;padding:0 10px;color:var(--t1);background:var(--bg);font:inherit;font-size:13.5px}
+.personal-field label:has(input){display:inline-flex;align-items:flex-start;gap:6px;width:49%;padding:8px 5px 8px 0;font-size:13px;line-height:1.5;vertical-align:top;color:var(--t2)}
+.personal-field input[type="checkbox"]{accent-color:var(--brand-1);margin:2px 0 0;flex:none}
+.personal-field p,.personal-backup p,.personal-exceptions p{margin:9px 0 0;font-size:12px;line-height:1.7;color:var(--t3)}
+.personal-panel-foot{padding:15px 26px 19px;display:flex;align-items:center;gap:10px;border-top:1px solid var(--divider)}
+.personal-panel-foot .filter-done{min-height:42px;flex:1}
+.personal-clear{font-size:12px;color:var(--t3);padding:6px}
+.personal-clear:hover{color:var(--red-1)}
+.personal-backup{border-top:1px solid var(--divider);padding:18px 0}
+.personal-backup button,.personal-exceptions button{border:1px solid var(--divider);border-radius:6px;font-size:12px;padding:7px 11px;margin:0 8px 4px 0;color:var(--t2)}
+.personal-backup button:hover,.personal-exceptions button:hover{border-color:var(--brand-1);color:var(--brand-1)}
+.personal-message{min-height:18px;font-size:12px;color:var(--brand-1);margin:8px 0}
+.personal-exceptions{border-top:1px solid var(--divider);padding:17px 0}
+.personal-exceptions h3{font-size:13.5px;font-weight:650;margin:0}
+.personal-exception{padding:12px 0;border-bottom:1px solid var(--divider);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.personal-exception span{font-size:12.5px;line-height:1.7;overflow-wrap:anywhere}
+.personal-exception button{flex:none;margin:0}
+.personal-mode-switch{display:flex;align-items:center;gap:10px;margin:22px 0 0;flex-wrap:wrap}
+.personal-modes{display:inline-flex;padding:3px;background:var(--bg-alt);border:1px solid var(--divider);border-radius:7px}
+.personal-modes button{border-radius:5px;padding:6px 13px;color:var(--t2);font-size:12.5px}
+.personal-modes button[aria-pressed="true"]{background:var(--bg-elv);color:var(--brand-1);box-shadow:0 1px 4px rgba(0,0,0,.07);font-weight:650}
+#personal-random{color:var(--brand-1);border:1px solid var(--divider);border-radius:6px;padding:7px 11px;font-size:12.5px}
+#personal-random:hover{border-color:var(--brand-1)}
+.personal-mode-note{font-size:12px!important;margin:9px 0 0!important;color:var(--t3)!important}
+.personal-card-menu{display:none;position:relative;flex:none;align-self:flex-start;margin-left:2px}
+body.person-ready .personal-card-menu{display:block}
+.personal-card-menu summary{list-style:none;cursor:pointer;padding:5px 7px;color:var(--t3);font-size:12px;white-space:nowrap}
+.personal-card-menu summary::-webkit-details-marker{display:none}
+.personal-card-menu summary:hover{color:var(--brand-1)}
+.personal-card-menu[open] .personal-card-actions{position:absolute;right:0;top:100%;min-width:145px;z-index:5;padding:5px;box-shadow:var(--shadow);border-radius:6px;background:var(--bg-elv);border:1px solid var(--divider)}
+.personal-card-actions button{display:block;width:100%;padding:7px 10px;color:var(--t2);text-align:left;font-size:12px;border-radius:4px;white-space:nowrap}
+.personal-card-actions button:hover{background:var(--brand-soft);color:var(--brand-1)}
+.personal-card-menu[data-choice="keep"]>summary{color:var(--brand-1)}
+.personal-card-menu[data-choice="skip"]>summary{color:var(--t3);text-decoration:underline dotted}
+@media(max-width:1100px){.personal-trigger{padding:0 8px}.personal-trigger span{display:none}}
+@media(max-width:590px){.personal-trigger{height:36px;width:34px;justify-content:center;border:0;padding:0}
+ .personal-panel-head{padding:22px 20px 17px}.personal-panel-scroll{padding:18px 20px}.personal-panel-foot{padding:14px 20px}
+ .personal-field label:has(input){width:100%}.personal-card-menu summary{padding:5px 2px}.personal-card-menu[open] .personal-card-actions{right:-18px}}
+@media(prefers-reduced-motion:reduce){.personal-panel{transition:none}}
+
 </style>
 
 <!-- ga:start 这两行注释是离线构建的剥离标记（tools/offline/build.mjs），别删 -->
@@ -541,6 +596,7 @@ body.filter-open{overflow:hidden}
     </label>
     <div class="nav-r">
       <button class="filter-trigger" id="filter-trigger" type="button" aria-controls="filter-panel" aria-expanded="false" aria-haspopup="dialog" title="打开筛选条件"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4" /></svg><span class="filter-trigger-label">筛选</span><span class="filter-count" id="filter-count" hidden>0</span></button>
+      <button class="personal-trigger" id="personal-trigger" type="button" aria-controls="personal-panel" aria-expanded="false" aria-haspopup="dialog" title="我的阅读设置"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="3.5"/><path d="M5 20c.4-4 3-6 7-6s6.6 2 7 6"/></svg><span>我的阅读</span></button>
       <a class="icon-btn nav-readme" href="README.md" title="查看 README.md" aria-label="README"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6zm8 1.5V8h4.5zM8 12h8v1.5H8zm0 3.5h8V17H8z"/></svg></a>
       <button class="icon-btn" id="hidden-nav" type="button" title="管理已隐藏的条目" aria-label="管理已隐藏的条目"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A11.7 11.7 0 0 1 12 5c5 0 8.9 4 10 7a13 13 0 0 1-3.1 4.4M6.2 6.3A12.5 12.5 0 0 0 2 12c1.1 3 5 7 10 7 1.6 0 3.1-.4 4.4-1.1M9.9 10a3 3 0 0 0 4.1 4.1"/></svg><span class="hidden-num" id="hidden-nav-count" hidden>0</span></button>
       <button class="switch" id="theme" aria-label="切换深色模式" title="切换深色模式"><span class="knob"><svg class="sun" viewBox="0 0 24 24"><path d="M12 4a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0V5a1 1 0 0 1 1-1zm0 13a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1zm8-6a1 1 0 1 1 0 2h-1a1 1 0 1 1 0-2zM5 11a1 1 0 1 1 0 2H4a1 1 0 1 1 0-2zm12.07-5.07a1 1 0 0 1 0 1.41l-.7.71a1 1 0 1 1-1.42-1.41l.71-.71a1 1 0 0 1 1.41 0zM8.05 16.95a1 1 0 0 1 0 1.41l-.7.71a1 1 0 1 1-1.42-1.41l.71-.71a1 1 0 0 1 1.41 0zm9.02 0l.7.71a1 1 0 1 1-1.41 1.41l-.71-.7a1 1 0 0 1 1.42-1.42zM6.34 5.93l.71.71a1 1 0 0 1-1.41 1.41l-.71-.7a1 1 0 0 1 1.41-1.42zM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8z"/></svg><svg class="moon" viewBox="0 0 24 24"><path d="M12.1 22c-5.5 0-10-4.5-10-10 0-4.8 3.4-8.9 8-9.8.5-.1.9.4.7.9A8 8 0 0 0 20.9 13c.5-.2 1 .2.9.7-.9 4.7-5 8.3-9.7 8.3z"/></svg></span></button>
@@ -630,6 +686,63 @@ body.filter-open{overflow:hidden}
   </div>
 </aside>
 
+<div class="personal-backdrop" id="personal-backdrop" hidden></div>
+<aside class="personal-panel" id="personal-panel" role="dialog" aria-modal="true" aria-labelledby="personal-title" aria-hidden="true" inert>
+  <div class="personal-panel-head">
+    <div><div class="filter-eyebrow">按需定制</div><h2 id="personal-title">我的阅读设置</h2></div>
+    <button class="filter-close" id="personal-close" type="button" aria-label="关闭我的阅读设置"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="personal-panel-scroll">
+    <p class="personal-help">默认不做任何筛选。保存设置也不会改变当前页面，只有主动切换到「我的阅读」才会生效。所有内容随时可在「全部内容」找回。</p>
+    <form id="personal-form">
+      <div class="personal-field"><label for="person-sex">身体相关内容偏好</label>
+        <select id="person-sex" name="sex"><option value="">不限制</option><option value="male">男性相关</option><option value="female">女性相关</option></select>
+        <p>只调整明确针对特定生理或家庭场景的内容，不按关键词盲目过滤。</p>
+      </div>
+      <div class="personal-field"><label for="person-age">年龄阶段</label>
+        <select id="person-age" name="age"><option value="">不限制</option><option value="u18">18 岁以下</option><option value="18-24">18—24 岁</option><option value="25-34">25—34 岁</option><option value="35-49">35—49 岁</option><option value="50+">50 岁及以上</option></select>
+      </div>
+      <fieldset class="personal-field"><legend>生活状态（可多选）</legend>
+        <label><input type="checkbox" name="roles" value="student"> 在校学生</label>
+        <label><input type="checkbox" name="roles" value="worker"> 上班族</label>
+        <label><input type="checkbox" name="roles" value="freelance"> 自由职业</label>
+        <label><input type="checkbox" name="roles" value="business"> 创业 / 做生意</label>
+        <label><input type="checkbox" name="roles" value="parent"> 有孩子或计划育儿</label>
+        <label><input type="checkbox" name="roles" value="caregiver"> 需要照顾老人</label>
+        <p>未勾选不代表“不适用”，不会仅凭没选就排除相关内容。</p>
+      </fieldset>
+      <fieldset class="personal-field"><legend>暂时不想看（明确选择才生效）</legend>
+        <label><input type="checkbox" id="person-skip-kids"> 育儿、儿童照护专题</label>
+        <label><input type="checkbox" id="person-skip-elders"> 养老、照顾老人专题</label>
+      </fieldset>
+      <fieldset class="personal-field"><legend>关注领域（用于随便看看，不隐藏其他领域）</legend>
+        <label><input type="checkbox" name="topics" value="health"> 健康</label>
+        <label><input type="checkbox" name="topics" value="money"> 钱与理财</label>
+        <label><input type="checkbox" name="topics" value="work"> 工作与学习</label>
+        <label><input type="checkbox" name="topics" value="safety"> 安全与法律</label>
+        <label><input type="checkbox" name="topics" value="life"> 生活与家庭</label>
+        <label><input type="checkbox" name="topics" value="travel"> 旅行出行</label>
+      </fieldset>
+    </form>
+    <section class="personal-exceptions" id="personal-exceptions" hidden>
+      <h3>手动调整的条目 <span id="personal-exceptions-count">0</span></h3>
+      <p>「暂时略过」只在我的阅读中生效；原有「隐藏」仍由顶部的已隐藏入口管理。</p>
+      <div id="personal-exceptions-list"></div>
+    </section>
+    <div class="personal-backup">
+      <button type="button" id="personal-export">导出设置</button>
+      <button type="button" id="personal-import-button">导入设置</button>
+      <input type="file" id="personal-import" accept=".json,application/json" hidden>
+      <p>设置仅存于当前浏览器。导出的文件包含偏好和隐藏列表，请妥善保管；清理浏览器数据可能删除本地记录。</p>
+    </div>
+    <p class="personal-message" id="personal-message" role="status" aria-live="polite"></p>
+  </div>
+  <div class="personal-panel-foot">
+    <button type="button" class="personal-clear" id="personal-clear">清除个性化设置</button>
+    <button type="button" class="filter-done" id="personal-save">保存设置</button>
+  </div>
+</aside>
+
 <main class="content">
   <div class="doc">
     <div class="doc-head">
@@ -637,6 +750,14 @@ body.filter-open{overflow:hidden}
       <p class="lead">每一条都回答两个问题：花掉什么，换回什么。</p>
       <p class="howto">换回的算在谁头上也分档：你自己最高，其次配偶和直系亲属，再次朋友同事，陌生人最低——最低不等于零，只是回报的指望小、要连风险一起看。</p>
       <p class="howto">不用全做：这是一份按性价比排好的备选单，不是任务清单。挑走一两条就算数，剩下的需要时再回来查——想挑省力的，左边把「花钱」选「不花钱」、「要毅力」选「不用」，剩下的就是。作者自己也没做到其中大部分。正文里带虚线的「第 X 条」可以点开，就地看那条写了什么，不用自己翻过去。</p>
+      <div class="personal-mode-switch" id="personal-mode-switch" hidden>
+        <div class="personal-modes" role="group" aria-label="阅读模式">
+          <button type="button" data-person-mode="all" aria-pressed="true">全部内容</button>
+          <button type="button" data-person-mode="my" aria-pressed="false">我的阅读</button>
+        </div>
+        <button type="button" id="personal-random" hidden>随便看看 <span aria-hidden="true">↗</span></button>
+      </div>
+      <p class="personal-mode-note" id="personal-mode-note" hidden></p>
       <div class="stat" aria-live="polite"><span>正在显示 <b id="cnt">–</b> 条</span><span class="stat-sep">·</span><span>共收录 <span id="tot">–</span> 条</span></div>
       <div class="active-filters" id="active-filters" aria-label="已启用的筛选条件" hidden></div>
       <details class="hidden-manage" id="hidden-manage">
@@ -1058,6 +1179,13 @@ function gotoItem(key, fromId){
     if (!confirm('这条建议已隐藏，是否恢复并跳转？')) return;
     restoreHidden(hiddenCard);
   }
+  // 跳转引用优先于个人偏好：临时切至全部内容，不修改已保存的阅读模式。
+  const personalBlocked = PERSON.configured && PERSON.mode === 'my' &&
+    (hiddenCard ? !personalMatches(hiddenCard) :
+     !!sec && CARDS.some(c=>c.e.sec===sec && !HIDDEN.has(c.hiddenKey) && !personalMatches(c)));
+  if (!el.offsetParent && personalBlocked){
+    PERSON.mode='all';syncPersonalUI();apply();
+  }
   if (!el.offsetParent){            // 目标被筛选藏起来了，先把筛选清掉再跳
     state.q = ''; for (const d of DIMS) state[d].clear();
     syncControls(); apply(); writeUrl();
@@ -1162,6 +1290,177 @@ function showHiddenPanel(){
   panel.open = true; panel.scrollIntoView({block:'start'});
   panel.querySelector('summary').focus({preventScroll:true});
 }
+
+/* ---------- 我的阅读 v1（完全自愿；没设置时零筛除） ----------
+  元数据独立于 book/：上游新增条目没有标记时默认保留，绝不通过模糊关键词隐藏。
+  与旧版 HIDDEN 互不干涉；同一节插入条目时，手动覆盖按节号+标题匹配。 */
+const PERSON_STORAGE_KEY = 'howtolivebetter:personal:v1';
+const PERSON_ROLES = ['student','worker','freelance','business','parent','caregiver'];
+const PERSON_TOPICS = ['health','money','work','safety','life','travel'];
+const PERSON_TOPIC_BY_SECTION = {
+  '1':'safety','2':'health','3':'health','4':'work','5':'money','6':'money','7':'money','8':'safety','9':'safety',
+  '10':'life','11':'work','12':'work','13':'safety','14':'safety','15':'money','16':'health','17':'life','18':'life',
+  '19':'work','20':'life','21':'travel','22':'life','23':'work','24':'health','25':'life','26':'work','27':'health',
+  '28':'health','29':'health','30':'life','31':'work','32':'travel','33':'health','34':'health'
+};
+// 高置信度适用性规则：按上游的章节标题，而非全文关键字做判断。
+// 对法律、安全、急救和其他不确定内容不自动排除；父母/照护者可保留相关章节。
+const PERSON_KIDS_SECTIONS = new Set(['养孩子划不划算','刚出生的孩子怎么带','上学以后的孩子','怀孕和生产']);
+const PERSON_ELDER_SECTIONS = new Set(['家里有老人']);
+const PERSON_MALE_TITLES = new Set([
+ '十八岁那年 10 月 31 日前要做兵役登记；义务兵服现役就是两年',
+ '应征之后拒服兵役，两年内不准出境或升学复学，还进不了公务员和国企',
+ '大学生当兵最实的两块：学费每年补最高 20000 元，学籍保留两年、考研有专项计划'
+]);
+const PERSON_YOUTH_TITLES = new Set([
+ '先把门槛对一遍：十二条路的年龄和学历要求都是明文写死的',
+ '十八岁那年 10 月 31 日前要做兵役登记；义务兵服现役就是两年',
+ '应征之后拒服兵役，两年内不准出境或升学复学，还进不了公务员和国企',
+ '大学生当兵最实的两块：学费每年补最高 20000 元，学籍保留两年、考研有专项计划',
+ '高考填志愿那天就能锁定编制的两条路：公费师范生和定向医学生，代价是 6 年履约'
+]);
+const PERSON_FEMALE_TITLES=new Set([
+ '女性接种 HPV 疫苗，越早越好',
+ '女性 40 岁起做乳腺癌筛查，每两年一次钼靶',
+ '30 岁以上女性做宫颈癌筛查，优先 HPV 检测',
+ '65 岁以上的女性去做一次双能 X 线骨密度检查，绝经后有骨质疏松危险因素的不用等到 65 岁',
+ '绝经前后潮热盗汗影响到生活，就去妇科评估激素治疗，别硬扛也别自己买药，更别拿它防心脏病'
+]);
+const PERSON_MALE_HEALTH_TITLES=new Set([
+ '勃起功能出了问题，先去查心血管，别当成单纯的「那方面的事」',
+ '减重、戒烟、把血压血糖控住，勃起功能能跟着好转',
+ '有高危性行为的男男性行为者，去艾滋病定点医院问暴露前预防药，按时吃能少感染七成以上'
+]);
+// 只对有明确年龄下限的标题做保守判断。年龄段覆盖该门槛则不筛除。
+const PERSON_AGE_MIN=new Map([
+ ['35 岁以后只要超重，就去查一次空腹血糖，正常也每三年再查',35],
+ ['女性 40 岁起做乳腺癌筛查，每两年一次钼靶',40],
+ ['30 岁以上女性做宫颈癌筛查，优先 HPV 检测',30],
+ ['45 到 50 岁起做结直肠癌筛查，做查大便隐血的粪便免疫化学检测或者肠镜',45],
+ ['50 岁以后打带状疱疹疫苗',50],
+ ['65 岁以上打肺炎球菌疫苗',65],
+ ['60 岁以上练平衡和腿部力量，改造家里的浴室和楼梯',60],
+ ['65 岁以上的女性去做一次双能 X 线骨密度检查，绝经后有骨质疏松危险因素的不用等到 65 岁',65]
+]);
+const PERSON_AGE_MAX={'u18':17,'18-24':24,'25-34':34,'35-49':49};
+// 仅「确实还没到建议的年龄」才暂时收起；照顾老人、孩子的人例外。
+function freshPersonal(){return {version:1,configured:false,mode:'all',sex:'',age:'',roles:[],topics:[],skipKids:false,skipElders:false,overrides:{}};}
+let PERSON = freshPersonal();
+let PERSON_LAST_RANDOM = null;
+function validPersonal(raw){
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw) || raw.version !== 1 || raw.configured !== true) return null;
+  if (!['','male','female'].includes(raw.sex) || !['','u18','18-24','25-34','35-49','50+'].includes(raw.age)) return null;
+  if (!Array.isArray(raw.roles) || !raw.roles.every(x=>PERSON_ROLES.includes(x)) ||
+      !Array.isArray(raw.topics) || !raw.topics.every(x=>PERSON_TOPICS.includes(x))) return null;
+  if (typeof raw.skipKids !== 'boolean' || typeof raw.skipElders !== 'boolean') return null;
+  if (raw.overrides === null || typeof raw.overrides !== 'object' || Array.isArray(raw.overrides)) return null;
+  const result=freshPersonal();
+  result.configured=true;result.mode=raw.mode==='my'?'my':'all';result.sex=raw.sex;result.age=raw.age;
+  result.roles=[...new Set(raw.roles)];result.topics=[...new Set(raw.topics)];
+  result.skipKids=raw.skipKids;result.skipElders=raw.skipElders;
+  const keys=Object.keys(raw.overrides);
+  if (keys.length > 2000) return null;
+  for (const key of keys){
+    let parsed;try{parsed=JSON.parse(key);}catch(e){return null;}
+    if(key.length > 900 || !Array.isArray(parsed) || parsed.length!==2 ||
+       !/^\d{1,3}$/.test(String(parsed[0])) || typeof parsed[1]!=='string' ||
+       !['keep','skip'].includes(raw.overrides[key]))return null;
+    result.overrides[key]=raw.overrides[key];
+  }
+  return result;
+}
+function loadPersonal(){
+  try {const raw=localStorage.getItem(PERSON_STORAGE_KEY); PERSON=raw?validPersonal(JSON.parse(raw))||freshPersonal():freshPersonal();}
+  catch (err){PERSON=freshPersonal();}
+}
+function persistPersonal(){
+  try {localStorage.setItem(PERSON_STORAGE_KEY, JSON.stringify(PERSON));return true;}
+  catch(err){document.getElementById('personal-message').textContent='无法保存到浏览器，本次设置可能在关闭页面后丢失。';return false;}
+}
+function personalMatches(card){
+  if (!PERSON.configured || PERSON.mode !== 'my') return true;
+  const manual=PERSON.overrides[card.hiddenKey];
+  if (manual==='keep') return true;
+  if (manual==='skip') return false;
+  const chapter=String(SECS.get(card.e.sec)?.title || '').split(/[：:]/)[0].trim();
+  if (PERSON.skipKids && PERSON_KIDS_SECTIONS.has(chapter)) return false;
+  if (PERSON.skipElders && PERSON_ELDER_SECTIONS.has(chapter)) return false;
+  const parent=PERSON.roles.includes('parent');
+  if (PERSON.sex==='male' && (chapter==='怀孕和生产'||PERSON_FEMALE_TITLES.has(card.e.title)) && !parent && !PERSON.roles.includes('caregiver')) return false;
+  if (PERSON.sex==='female' && (PERSON_MALE_TITLES.has(card.e.title)||PERSON_MALE_HEALTH_TITLES.has(card.e.title)) && !PERSON.roles.includes('caregiver')) return false;
+  if (['35-49','50+'].includes(PERSON.age) && PERSON_YOUTH_TITLES.has(card.e.title) && !parent) return false;
+  const minAge=PERSON_AGE_MIN.get(card.e.title);
+  if (minAge && PERSON_AGE_MAX[PERSON.age]<minAge && !parent && !PERSON.roles.includes('caregiver')) return false;
+  return true; // 其他不确定条目及上游新增条目均保留
+}
+function fillPersonalForm(){
+  const form=document.getElementById('personal-form');
+  form.elements.sex.value=PERSON.sex;form.elements.age.value=PERSON.age;
+  form.querySelectorAll('input[name="roles"],input[name="topics"]').forEach(input=>{
+    input.checked=PERSON[input.name].includes(input.value);
+  });
+  document.getElementById('person-skip-kids').checked=PERSON.skipKids;
+  document.getElementById('person-skip-elders').checked=PERSON.skipElders;
+}
+function syncPersonalUI(){
+  document.body.classList.toggle('person-ready',PERSON.configured);
+  document.getElementById('personal-mode-switch').hidden=!PERSON.configured;
+  document.querySelectorAll('[data-person-mode]').forEach(b=>{
+    b.setAttribute('aria-pressed',String(b.dataset.personMode===(PERSON.configured?PERSON.mode:'all')));
+  });
+  document.getElementById('personal-random').hidden=!PERSON.configured||PERSON.mode!=='my';
+  const note=document.getElementById('personal-mode-note');
+  note.hidden=!PERSON.configured;
+  if(PERSON.configured)note.textContent=PERSON.mode==='my'?
+    '正在按你的设置暂时收起部分内容，随时可切回全部。兴趣只影响随机推荐。':
+    '已保存偏好；当前仍是完整阅读，切换到「我的阅读」才启用个人筛选。';
+  const trigger=document.getElementById('personal-trigger');
+  trigger.classList.toggle('configured',PERSON.configured);
+  document.querySelectorAll('.personal-card-menu').forEach(menu=>{
+    const card=CARD_OF.get(menu.closest('.card'));
+    if(card)menu.dataset.choice=PERSON.overrides[card.hiddenKey]||'auto';
+  });
+  renderPersonalExceptions();
+}
+function renderPersonalExceptions(){
+  const box=document.getElementById('personal-exceptions'),list=document.getElementById('personal-exceptions-list');
+  list.replaceChildren();const entries=Object.entries(PERSON.overrides);
+  box.hidden=!PERSON.configured||entries.length===0;
+  document.getElementById('personal-exceptions-count').textContent=entries.length;
+  for(const [key,value] of entries){
+    let title=key;try{title=JSON.parse(key)[1]||key;}catch(e){}
+    const row=document.createElement('div');row.className='personal-exception';
+    const label=document.createElement('span');label.textContent=(value==='keep'?'总是显示 · ':'暂时略过 · ')+title;
+    const reset=document.createElement('button');reset.type='button';reset.textContent='撤销';reset.dataset.personKey=key;
+    row.append(label,reset);list.appendChild(row);
+  }
+}
+function setPersonalMode(mode){
+  if (!PERSON.configured)return;
+  PERSON.mode=mode==='my'?'my':'all';persistPersonal();syncPersonalUI();apply();
+}
+function personalChooseRandom(){
+  if (!PERSON.configured || PERSON.mode!=='my')return;
+  const cards=CARDS.filter(c=>!c.el.hidden),available=cards.filter(c=>c!==PERSON_LAST_RANDOM);
+  const pool=available.length?available:cards;
+  if(!pool.length){document.getElementById('personal-mode-note').textContent='当前筛选下没有条目，试试放宽筛选条件。';return;}
+  // 生活状态也仅用于随机阅读偏好，不能据此推断“不适用”并隐藏条目。
+  const roleTopics={student:['work'],worker:['work','money'],freelance:['work','money'],
+    business:['work','money'],parent:['life','health'],caregiver:['life','health']};
+  const preferred=new Set([...PERSON.topics,...PERSON.roles.flatMap(role=>roleTopics[role]||[])]);
+  const favored=pool.filter(c=>preferred.has(PERSON_TOPIC_BY_SECTION[c.e.sec]));
+  const candidate=favored.length&&Math.random()<.75?favored:pool;
+  const picked=candidate[Math.floor(Math.random()*candidate.length)];
+  PERSON_LAST_RANDOM=picked;scrollToEl(picked.el);
+}
+function personalBackup(){
+  const data={format:'HowToLiveBetter-personal-v1',profile:PERSON,hidden:[...HIDDEN]};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='HowToLiveBetter-阅读设置.json';document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
 // 侧栏条目目录：卡片 id → 目录里那一行，节号 → 该节的目录块
 const TOC = new Map(), TOC_SEC = new Map();
 let TOC_ON = null, TOC_SELK = '';
@@ -1237,7 +1536,12 @@ function build(sections){
       const id = `e-${e.sec}-${e.n}`;
       const c = document.createElement('article'); c.className='card'; c.id = id;
       c.innerHTML = `
-        <div class="card-h"><span class="idx">${e.n}</span><h3 class="t"></h3><a class="anchor" href="#${id}" aria-label="本条链接">#</a><button class="hide-item" type="button">隐藏</button></div>
+        <div class="card-h"><span class="idx">${e.n}</span><h3 class="t"></h3><a class="anchor" href="#${id}" aria-label="本条链接">#</a><button class="hide-item" type="button">隐藏</button><details class="personal-card-menu">
+          <summary>针对我</summary><div class="personal-card-actions">
+            <button type="button" data-person-rule="keep">总是显示</button>
+            <button type="button" data-person-rule="skip">暂时略过</button>
+            <button type="button" data-person-rule="auto">恢复自动判断</button>
+          </div></details></div>
         <div class="badges"></div>
         <p class="human"></p>
         <div class="rows">
@@ -1365,7 +1669,7 @@ function apply(){
   let shown = 0, rerender = 0; const perSec = {};
   for (const card of CARDS){
     const {e, el} = card;
-    let ok = !HIDDEN.has(card.hiddenKey);
+    let ok = !HIDDEN.has(card.hiddenKey) && personalMatches(card);
     if (state.sec.size && !state.sec.has(e.sec)) ok = false;
     if (ok && state.ratio.size && !state.ratio.has(e.ratio)) ok = false;
     if (ok && state.lens.size && !state.lens.has(e.lens)) ok = false;
@@ -1386,9 +1690,11 @@ function apply(){
   for (const b of BLOCKS){ const n = perSec[b.n]||0; if (b.el.hidden !== (n === 0)) b.el.hidden = n === 0; b.k.textContent = n; }
   document.getElementById('cnt').textContent = shown;
   document.getElementById('empty').hidden = shown !== 0;
-  document.getElementById('empty-text').textContent = HIDDEN.size
-    ? '当前没有可见条目。可调整筛选，或从上方「已隐藏」恢复条目。'
-    : '没有匹配的条目。去掉一个筛选条件，或换个更短的关键词。';
+  document.getElementById('empty-text').textContent =
+    PERSON.configured && PERSON.mode==='my'
+      ? '我的阅读下没有匹配项。可以调整设置，或者切换到「全部内容」。'
+      : HIDDEN.size ? '当前没有可见条目。可调整筛选，或从上方「已隐藏」恢复条目。'
+      : '没有匹配的条目。去掉一个筛选条件，或换个更短的关键词。';
   syncControls(); syncFilterSummary(shown); writeUrl(); tocSync(spyLast);
   PERF.log('apply', t0, `命中 ${shown} 条，重渲染 ${rerender} 张`);
 }
@@ -1409,10 +1715,101 @@ function wire(){
     if (on) document.getElementById('filter-close').focus();
     else if (panel.contains(document.activeElement)) filterButton.focus();
   };
-  filterButton.addEventListener('click', () => setFilter(!panel.classList.contains('open')));
+  filterButton.addEventListener('click', () => {if(document.getElementById('personal-panel').classList.contains('open'))setPersonalPanel(false);setFilter(!panel.classList.contains('open'));});
   document.getElementById('filter-close').addEventListener('click', () => setFilter(false));
   document.getElementById('filter-done').addEventListener('click', () => setFilter(false));
   backdrop.addEventListener('click', () => setFilter(false));
+
+  /* 用户主动操作之前：不改浏览模式、不访问个人资料、不显示设置向导。 */
+  const personalPanel=document.getElementById('personal-panel');
+  const personalBackdrop=document.getElementById('personal-backdrop');
+  const personalButton=document.getElementById('personal-trigger');
+  const setPersonalPanel=on=>{
+    if(on){setMenu(false);setFilter(false);fillPersonalForm();}
+    personalPanel.classList.toggle('open',on);
+    personalPanel.inert=!on;personalPanel.setAttribute('aria-hidden',String(!on));
+    personalButton.setAttribute('aria-expanded',String(on));
+    personalBackdrop.hidden=!on;
+    document.body.classList.toggle('filter-open',on);
+    if(on)document.getElementById('personal-close').focus();
+    else if(personalPanel.contains(document.activeElement))personalButton.focus();
+  };
+  personalButton.addEventListener('click',()=>setPersonalPanel(!personalPanel.classList.contains('open')));
+  personalBackdrop.addEventListener('click',()=>setPersonalPanel(false));
+  document.getElementById('personal-close').addEventListener('click',()=>setPersonalPanel(false));
+  personalPanel.addEventListener('keydown',ev=>{
+    if(ev.key==='Escape'){ev.preventDefault();setPersonalPanel(false);return;}
+    if(ev.key!=='Tab')return;
+    const buttons=[...personalPanel.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled])')]
+      .filter(x=>x.getClientRects().length&&!x.closest('[hidden]'));
+    if(!buttons.length)return;
+    if(ev.shiftKey&&document.activeElement===buttons[0]){ev.preventDefault();buttons[buttons.length-1].focus();}
+    else if(!ev.shiftKey&&document.activeElement===buttons[buttons.length-1]){ev.preventDefault();buttons[0].focus();}
+  });
+  document.getElementById('personal-save').addEventListener('click',()=>{
+    const form=document.getElementById('personal-form');
+    const next=freshPersonal();
+    next.configured=true;
+    next.mode=PERSON.configured?PERSON.mode:'all'; // 首次保存不会悄悄启用个性化
+    next.sex=form.elements.sex.value;next.age=form.elements.age.value;
+    for(const group of ['roles','topics'])next[group]=[...form.querySelectorAll('input[name="'+group+'"]:checked')].map(x=>x.value);
+    next.skipKids=document.getElementById('person-skip-kids').checked;
+    next.skipElders=document.getElementById('person-skip-elders').checked;
+    next.overrides={...PERSON.overrides};
+    const validated=validPersonal(next);
+    if(!validated){document.getElementById('personal-message').textContent='设置格式错误，请重新检查。';return;}
+    PERSON=validated;
+    const stored=persistPersonal();syncPersonalUI();apply();
+    if(stored)setPersonalPanel(false);
+  });
+  document.getElementById('personal-clear').addEventListener('click',()=>{
+    if(!PERSON.configured)return;
+    if(!confirm('清除我的阅读设置？这不会影响原来手动隐藏的条目。'))return;
+    try{localStorage.removeItem(PERSON_STORAGE_KEY);}catch(e){}
+    PERSON=freshPersonal();syncPersonalUI();apply();setPersonalPanel(false);
+  });
+  document.getElementById('personal-mode-switch').addEventListener('click',ev=>{
+    const b=ev.target.closest('button[data-person-mode]');if(b)setPersonalMode(b.dataset.personMode);
+  });
+  document.getElementById('personal-random').addEventListener('click',personalChooseRandom);
+  document.getElementById('list').addEventListener('click',ev=>{
+    const b=ev.target.closest('button[data-person-rule]');if(!b||!PERSON.configured)return;
+    const menu=b.closest('.personal-card-menu'),card=CARD_OF.get(b.closest('.card'));
+    if(!card)return;
+    const value=b.dataset.personRule;
+    if(value==='auto')delete PERSON.overrides[card.hiddenKey];
+    else if(value==='keep'||value==='skip')PERSON.overrides[card.hiddenKey]=value;
+    menu.open=false;persistPersonal();syncPersonalUI();apply();
+  });
+  document.getElementById('personal-exceptions-list').addEventListener('click',ev=>{
+    const b=ev.target.closest('button[data-person-key]');if(!b)return;
+    delete PERSON.overrides[b.dataset.personKey];
+    persistPersonal();syncPersonalUI();apply();
+  });
+  document.getElementById('personal-export').addEventListener('click',personalBackup);
+  document.getElementById('personal-import-button').addEventListener('click',()=>document.getElementById('personal-import').click());
+  document.getElementById('personal-import').addEventListener('change',async ev=>{
+    const file=ev.target.files?.[0];ev.target.value='';if(!file)return;
+    const message=document.getElementById('personal-message');
+    if(file.size>512*1024){message.textContent='文件过大，请选用本站导出的设置文件。';return;}
+    try{
+      const obj=JSON.parse(await file.text());
+      if(obj?.format!=='HowToLiveBetter-personal-v1'||!Array.isArray(obj.hidden)||obj.hidden.length>5000||
+         !obj.hidden.every(x=>typeof x==='string'&&x.length<900))throw new Error('invalid format');
+      const profile=obj.profile?.version===1&&obj.profile.configured===false?
+        freshPersonal():validPersonal(obj.profile);
+      if(!profile)throw new Error('invalid profile');
+      if(!confirm('导入会替换当前个人设置和手动隐藏记录。确认继续？'))return;
+      PERSON=profile;HIDDEN.clear();for(const k of obj.hidden)HIDDEN.add(k);
+      saveHidden();persistPersonal();renderHiddenPanel();syncPersonalUI();apply();fillPersonalForm();
+      message.textContent='已导入设置和隐藏记录。';
+    }catch(e){message.textContent='文件格式不正确，未修改任何设置。';}
+  });
+  addEventListener('storage',ev=>{
+    if(ev.key!==PERSON_STORAGE_KEY)return;
+    loadPersonal();syncPersonalUI();apply();
+  });
+
   // 在抽屉内保持键盘焦点，不让 Tab 跑到遮罩后的页面。
   panel.addEventListener('keydown', event => {
     if (event.key === 'Escape'){event.preventDefault();setFilter(false);return;}
@@ -1464,7 +1861,7 @@ function wire(){
     HIDDEN.clear(); saveHidden(); renderHiddenPanel(); apply();
   });
   document.getElementById('hidden-nav').addEventListener('click', () => {
-    setMenu(false); setFilter(false); showHiddenPanel();
+    setMenu(false); setFilter(false); setPersonalPanel(false); showHiddenPanel();
   });
   addEventListener('storage', ev => {
     if (ev.key !== HIDDEN_STORAGE_KEY) return;
@@ -1492,8 +1889,8 @@ function wire(){
   document.getElementById('reset').addEventListener('click', reset);
   document.getElementById('reset2').addEventListener('click', reset);
   document.addEventListener('keydown', e => {
-    if (e.key === '/' && !panel.classList.contains('open') && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); document.getElementById('q').focus(); }
-    if (e.key === 'Escape') { if (document.activeElement.id === 'q') document.activeElement.blur(); setFilter(false); setMenu(false); }
+    if (e.key === '/' && !panel.classList.contains('open') && !personalPanel.classList.contains('open') && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) { e.preventDefault(); document.getElementById('q').focus(); }
+    if (e.key === 'Escape') { if (document.activeElement.id === 'q') document.activeElement.blur(); setPersonalPanel(false); setFilter(false); setMenu(false); }
   });
   // 术语弹层
   const pop = document.getElementById('pop');
@@ -1505,7 +1902,7 @@ function wire(){
   document.addEventListener('keydown', e => { if (e.key === 'Enter' && document.activeElement.matches?.('abbr.term')) showTerm(document.activeElement); });
   addEventListener('scroll', () => { pop.hidden = true; }, {passive:true});
   // 侧栏（移动端抽屉）
-  mb.addEventListener('click', () => {setFilter(false);setMenu(!sb.classList.contains('open'));});
+  mb.addEventListener('click', () => {setPersonalPanel(false);setFilter(false);setMenu(!sb.classList.contains('open'));});
   bd.addEventListener('click', () => setMenu(false));
   // 深色模式
   document.getElementById('theme').addEventListener('click', () => {
@@ -1734,10 +2131,11 @@ document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !DM.mask
     if (!sections.length) throw new Error('empty');
     GLOSS = parseGlossary(md);
     readHidden();
+    loadPersonal();
     PERF.log('解析正文', t1, files.length + ' 个文件');
     status.remove();
     const t2 = performance.now(); build(sections); PERF.log('建 DOM', t2, CARDS.length + ' 张卡');
-    buildGlossary(); readUrl(); wire(); apply();
+    buildGlossary(); readUrl(); wire(); syncPersonalUI(); apply();
     PERF.mark(`DOM 节点 ${document.getElementsByTagName('*').length}，术语 ${GLOSS.length}`);
     if (location.hash){
       let target = document.getElementById(location.hash.slice(1));
@@ -1745,6 +2143,11 @@ document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !DM.mask
       // 这时按 hash 办：点链接就是要看那一条，筛选清掉。
       if (target && !target.offsetParent && CARD_OF.get(target) && HIDDEN.has(CARD_OF.get(target).hiddenKey)){
         showHiddenPanel(); return;
+      }
+      if (target && !target.offsetParent && PERSON.configured && PERSON.mode==='my' &&
+          ((CARD_OF.get(target) && !personalMatches(CARD_OF.get(target))) ||
+           (target.dataset?.sec && CARDS.some(c=>c.e.sec===target.dataset.sec && !personalMatches(c))))){
+        PERSON.mode='all';syncPersonalUI();apply(); // 分享直达时临时展示完整内容
       }
       if (target && !target.offsetParent){
         state.q = ''; for (const d of DIMS) state[d].clear();
