@@ -319,6 +319,174 @@ abbr.term:hover{border-bottom-color:var(--brand-1);color:var(--brand-1)}
   .hidden-row .restore-item{margin-left:auto}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* 2026 阅读体验：内容优先、单一目录、独立筛选面板 */
+:root{--bg:#fbfaf7;--bg-alt:#f7f6f2;--bg-soft:#f8f7f3;--bg-elv:#fffefa;--divider:#e7e3db;--gutter:#e7e3db;
+  --t1:#252c29;--t2:#53605a;--t3:#747f77;--brand-1:#356c60;--brand-2:#245549;--brand-3:#7a9d91;--brand-soft:rgba(53,108,96,.085);
+  --mark:rgba(226,198,129,.30);--side-w:264px;--nav-h:64px}
+html.dark{--bg:#191e1c;--bg-alt:#202724;--bg-soft:#232b27;--bg-elv:#252e29;--divider:#39453e;
+  --t1:#eef1e9;--t2:#c2cec4;--t3:#96a79c;--brand-1:#b0d3bb;--brand-2:#d3e9d8;--brand-3:#7eac92;--brand-soft:rgba(176,211,187,.105)}
+html{scroll-padding-top:calc(var(--nav-h) + 20px)}
+body{font-size:15px;line-height:1.8;letter-spacing:.005em}
+.nav{background:var(--bg-elv);box-shadow:0 1px 0 var(--divider)}
+.nav-in{gap:22px;padding:0 clamp(18px,2.4vw,38px)}
+.logo{background:var(--bg-alt);color:var(--brand-1);border:1px solid var(--divider);width:30px;height:30px;border-radius:7px}
+.title{font-weight:650;letter-spacing:.02em;font-size:15px}
+.search{max-width:440px;margin-left:auto}
+.search input{height:39px;background:var(--bg-alt);border-color:transparent;border-radius:7px;font-size:13.5px}
+.search input:hover{border-color:var(--divider)}
+.nav-r{gap:11px}
+.nav .icon-btn{width:36px;height:36px}
+.filter-trigger{display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap;height:37px;padding:0 13px;
+  border:1px solid var(--divider);border-radius:7px;background:var(--bg-elv);color:var(--t2);font-size:13px;font-weight:600}
+.filter-trigger:hover,.filter-trigger[aria-expanded="true"]{border-color:var(--brand-3);color:var(--brand-1);background:var(--brand-soft)}
+.filter-trigger svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
+.filter-count{background:var(--brand-1);color:var(--bg);border-radius:10px;padding:0 6px;min-width:18px;height:18px;font-size:11px;line-height:18px;text-align:center}
+.sidebar{padding:28px 12px 56px 18px;background:var(--bg-alt);scrollbar-width:thin;scrollbar-color:var(--divider) transparent}
+.sidebar .group{border:0;margin:0;padding:0}
+.sidebar .gt{font-size:12px;letter-spacing:.09em;font-weight:700;padding:0 12px 13px;color:var(--t1)}
+.sidebar .gt small{letter-spacing:0;font-size:11px}
+.sec-link{position:relative;border-radius:6px;min-height:37px;padding:7px 10px;line-height:1.5;font-size:13px;font-weight:450;gap:8px}
+.sec-link:hover{color:var(--t1);background:var(--bg-mute)}
+.sec-link[aria-pressed="true"]{background:var(--brand-soft);color:var(--brand-1);font-weight:650}
+.sec-link.all{border-bottom:1px solid var(--divider);border-radius:0;margin-bottom:9px;padding-bottom:11px}
+.sec-link>span{min-width:0;flex:1}
+.sec-link i{font-size:11px;color:var(--t3);font-variant-numeric:tabular-nums}
+.sec-link .fold{width:22px;height:22px;margin:0}
+.toc-sub{margin:5px 0 12px 14px}
+.toc-sub a{font-size:12.5px;line-height:1.55;padding:5px 3px 5px 11px}
+.sidebar-footer-note{margin:26px 11px 0;font-size:12px;line-height:1.65;color:var(--t3)}
+/* 右侧筛选抽屉，不再将筛选控件混入章节列表 */
+.filter-backdrop{position:fixed;inset:0;z-index:49;background:rgba(14,25,20,.36);backdrop-filter:blur(2px)}
+.filter-panel{position:fixed;z-index:50;inset:0 0 0 auto;width:min(400px,100vw);display:flex;flex-direction:column;
+  background:var(--bg-elv);border-left:1px solid var(--divider);box-shadow:-16px 0 48px rgba(12,27,20,.10);
+  transform:translateX(101%);visibility:hidden;transition:transform .24s ease,visibility .24s}
+.filter-panel.open{transform:none;visibility:visible}
+.filter-panel-head{flex:none;display:flex;align-items:center;justify-content:space-between;padding:28px 28px 22px;border-bottom:1px solid var(--divider)}
+.filter-panel h2{font-size:23px;font-family:var(--serif);font-weight:600;line-height:1.3;margin:5px 0 0}
+.filter-eyebrow{font-size:11px;letter-spacing:.14em;font-weight:650;color:var(--brand-1)}
+.filter-close{height:34px;width:34px;display:grid;place-items:center;border-radius:6px;color:var(--t2)}
+.filter-close:hover{background:var(--bg-soft)}
+.filter-close svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.7;fill:none}
+.filter-panel-scroll{overflow-y:auto;flex:1;padding:20px 28px 18px;overscroll-behavior:contain;scrollbar-width:thin}
+.filter-panel .group{padding:0 0 21px;margin:0 0 20px;border-bottom:1px solid var(--divider)}
+.filter-panel .group:last-of-type{border-bottom:0;margin-bottom:0}
+.filter-panel .gt{font-size:13px;margin:0 0 8px;align-items:flex-start}
+.filter-panel .gt small{display:block;max-width:220px;text-align:right;font-size:11px;line-height:1.5}
+.filter-panel .chips{gap:8px}
+.filter-panel .chip{min-height:36px;padding:7px 13px;font-size:13px;border-radius:6px}
+.filter-panel .toggle{padding:8px 0}
+.filter-panel .hint{border-top:1px solid var(--divider);padding-top:12px}
+.filter-panel-foot{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:16px 28px 20px;
+  border-top:1px solid var(--divider);background:var(--bg-elv);flex:none}
+.filter-panel-foot .reset{margin:0;padding:9px 5px;border:0;color:var(--t3);font-size:13px}
+.filter-done{flex:1;border-radius:7px;padding:10px 12px;background:var(--brand-1);color:var(--bg);font-weight:650;font-size:13px;min-height:43px}
+.filter-done:hover{background:var(--brand-2);color:var(--bg-elv)}
+body.filter-open{overflow:hidden}
+/* 阅读布局 */
+.content{padding:calc(var(--nav-h) + 42px) clamp(28px,4.8vw,78px) 112px calc(var(--side-w) + clamp(28px,4.8vw,78px))}
+.doc{max-width:940px}
+.doc-head{margin:0 0 37px;padding-bottom:23px}
+.doc-head h1{font-size:clamp(34px,3vw,42px);line-height:1.35;margin:0 0 16px;letter-spacing:.014em}
+.doc-head p{max-width:66ch;margin:0 0 7px;font-size:14px;line-height:1.85}
+.doc-head .lead{font-size:16px;line-height:1.8;color:var(--t1)}
+.doc-head .howto{font-size:13.5px;line-height:1.8;color:var(--t2)}
+.doc-head .stat{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:19px 0 0;border:0;padding:0;font-size:12px}
+.doc-head .stat b{color:var(--t1);font-weight:700;font-size:13px}
+.stat-sep{color:var(--divider)}
+.active-filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:15px}
+.active-filter{display:inline-flex;gap:7px;align-items:center;min-height:29px;border-radius:5px;
+  border:1px solid var(--divider);font-size:12px;line-height:1.4;padding:5px 9px;color:var(--t2);background:var(--bg-elv)}
+.active-filter:hover{border-color:var(--brand-3);color:var(--brand-1)}
+.active-filter svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.6}
+.active-filter-clear{font-size:12px;color:var(--t3);padding:4px 6px}
+.active-filter-clear:hover{text-decoration:underline;color:var(--brand-1)}
+.hidden-manage{background:transparent;border:0;border-top:1px solid var(--divider);border-radius:0;margin:19px 0 0;padding:0}
+.hidden-manage summary{font-size:12.5px;padding:12px 0;color:var(--t2)}
+.hidden-panel{padding:4px 0 8px}
+.hidden-list{margin:12px 0}
+.hidden-row{padding:13px 0}
+.reading-resources{margin:0;border-top:1px solid var(--divider);padding:0;font-size:13px}
+.reading-resources>summary{list-style:none;cursor:pointer;padding:11px 0;display:flex;align-items:center;gap:12px;color:var(--t2);font-weight:500}
+.reading-resources>summary::-webkit-details-marker{display:none}
+.reading-resources>summary::before{content:"";width:7px;height:7px;border-bottom:1.5px solid var(--t3);border-right:1.5px solid var(--t3);
+ transform:rotate(-45deg);transition:transform .2s}
+.reading-resources[open]>summary::before{transform:rotate(45deg)}
+.resources-hint{margin-left:auto;font-size:11px;font-weight:400;color:var(--t3)}
+.resources-content{padding:0 0 17px}
+.resources-content .doc-links{margin:0;font-size:12.5px;line-height:2.2}
+.resources-content .gloss{border:0;border-top:1px solid var(--divider);border-radius:0;padding:0;margin-top:14px}
+.sec-block{margin-top:34px}
+.sec-h{padding-top:26px;margin-bottom:9px}
+.sec-h h2{font-size:27px}
+.intro{font-size:14px;line-height:1.9;color:var(--t2);max-width:77ch}
+.chapter-note{margin:8px 0 18px;border:0;border-left:2px solid var(--divider);padding:0 0 0 16px}
+.chapter-note>summary{display:inline-flex;align-items:center;gap:9px;cursor:pointer;color:var(--brand-1);font-size:12.5px;font-weight:600;padding:6px 0;list-style:none}
+.chapter-note>summary::-webkit-details-marker{display:none}
+.chapter-note>summary::before{content:"+";font:600 17px/1 var(--font);color:var(--t3)}
+.chapter-note[open]>summary::before{content:"−"}
+.chapter-note .intro{padding:7px 0 0;margin:0 0 10px}
+.card{padding:22px 0 24px}
+.card-h{gap:12px;align-items:baseline;margin-bottom:9px}
+.card-h h3{font-size:19px;line-height:1.65;letter-spacing:0}
+.card-h .idx{min-width:24px;font-size:12px}
+.card-h .anchor{font-size:13px}
+.hide-item{font-size:12px;padding:3px 9px;border:0;background:transparent;opacity:.57}
+.card:hover .hide-item,.hide-item:focus-visible{opacity:1;background:var(--bg-alt)}
+.badges{margin-bottom:12px;gap:7px}
+.badge{font-size:11.5px;border-color:var(--divider);line-height:21px;padding:1px 7px}
+.badge.tip,.badge.r3{border-color:var(--divider);font-weight:650}
+.human{border-left:2px solid var(--brand-3);padding-left:16px;margin:6px 0 19px;font-size:15px;line-height:1.95}
+.rows{gap:11px 21px;font-size:14px;line-height:1.9}
+.rows .k{font-size:12px}
+.src{margin-top:18px}
+.foot{margin-top:48px}
+@media (max-width:960px){
+ :root{--nav-h:58px}
+ .nav-in{padding:0 13px;gap:9px}
+ .nav-r{gap:5px}
+ .sidebar{padding:24px 12px 50px;width:min(310px,87vw)}
+ .title .logo{display:grid}
+ .title>span:last-child{display:none}
+ .content{padding:calc(var(--nav-h) + 28px) clamp(18px,5vw,34px) 90px}
+ .doc{max-width:880px}
+ .doc-head{margin-bottom:27px}
+ .doc-head h1{font-size:clamp(30px,5vw,38px)}
+ .filter-panel{width:min(400px,100vw)}
+ .card-h h3{font-size:17px}
+ .hide-item{opacity:1}
+}
+@media (max-width:590px){
+ .nav-in{gap:6px}
+ .nav-r{gap:4px}
+ .title{gap:0}
+ .logo{width:27px;height:27px}
+ .filter-trigger{width:38px;height:38px;padding:0;border:0;background:transparent}
+ .filter-trigger-label{display:none}
+ .filter-count{position:absolute;transform:translate(14px,-13px);font-size:10px;min-width:15px;height:15px;line-height:15px;padding:0 3px}
+ .filter-trigger{position:relative}
+ .nav-readme{display:none}
+ .search{min-width:72px}
+ .search input{padding-left:31px;padding-right:8px;height:37px;font-size:13px}
+ .search svg{left:9px;width:15px;height:15px}
+ .switch{margin-left:2px}
+ .doc-head .lead{font-size:15px}
+ .doc-head p{font-size:13.5px}
+ .sec-h h2{font-size:23px}
+ .sec-h{gap:8px}
+ .card-h{gap:8px}
+ .card-h h3{font-size:16px}
+ .card-h .idx{min-width:19px;font-size:12px}
+ .card-h .anchor{opacity:1}
+ .hide-item{margin-left:0}
+ .filter-panel-head{padding:23px 20px 17px}
+ .filter-panel-scroll{padding:18px 20px}
+ .filter-panel-foot{padding:15px 20px 18px}
+ .filter-panel .gt{display:block}
+ .filter-panel .gt small{display:block;max-width:none;text-align:left}
+}
+@media (prefers-reduced-motion:reduce){.filter-panel,.chapter-note>summary::before{transition:none!important}}
+
 </style>
 
 <!-- ga:start 这两行注释是离线构建的剥离标记（tools/offline/build.mjs），别删 -->
@@ -364,7 +532,7 @@ abbr.term:hover{border-bottom-color:var(--brand-1);color:var(--brand-1)}
 
 <header class="nav">
   <div class="nav-in">
-    <button class="icon-btn menu-btn" id="menu" aria-label="打开筛选" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></button>
+    <button class="icon-btn menu-btn" id="menu" aria-label="打开章节目录" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></button>
     <a class="title" href="./"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>高性价比人生指南</span></a>
     <label class="search">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg>
@@ -372,7 +540,8 @@ abbr.term:hover{border-bottom-color:var(--brand-1);color:var(--brand-1)}
       <kbd>/</kbd>
     </label>
     <div class="nav-r">
-      <a class="icon-btn" href="README.md" title="查看 README.md" aria-label="README"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6zm8 1.5V8h4.5zM8 12h8v1.5H8zm0 3.5h8V17H8z"/></svg></a>
+      <button class="filter-trigger" id="filter-trigger" type="button" aria-controls="filter-panel" aria-expanded="false" aria-haspopup="dialog" title="打开筛选条件"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4" /></svg><span class="filter-trigger-label">筛选</span><span class="filter-count" id="filter-count" hidden>0</span></button>
+      <a class="icon-btn nav-readme" href="README.md" title="查看 README.md" aria-label="README"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6zm8 1.5V8h4.5zM8 12h8v1.5H8zm0 3.5h8V17H8z"/></svg></a>
       <button class="icon-btn" id="hidden-nav" type="button" title="管理已隐藏的条目" aria-label="管理已隐藏的条目"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A11.7 11.7 0 0 1 12 5c5 0 8.9 4 10 7a13 13 0 0 1-3.1 4.4M6.2 6.3A12.5 12.5 0 0 0 2 12c1.1 3 5 7 10 7 1.6 0 3.1-.4 4.4-1.1M9.9 10a3 3 0 0 0 4.1 4.1"/></svg><span class="hidden-num" id="hidden-nav-count" hidden>0</span></button>
       <button class="switch" id="theme" aria-label="切换深色模式" title="切换深色模式"><span class="knob"><svg class="sun" viewBox="0 0 24 24"><path d="M12 4a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0V5a1 1 0 0 1 1-1zm0 13a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1zm8-6a1 1 0 1 1 0 2h-1a1 1 0 1 1 0-2zM5 11a1 1 0 1 1 0 2H4a1 1 0 1 1 0-2zm12.07-5.07a1 1 0 0 1 0 1.41l-.7.71a1 1 0 1 1-1.42-1.41l.71-.71a1 1 0 0 1 1.41 0zM8.05 16.95a1 1 0 0 1 0 1.41l-.7.71a1 1 0 1 1-1.42-1.41l.71-.71a1 1 0 0 1 1.41 0zm9.02 0l.7.71a1 1 0 1 1-1.41 1.41l-.71-.7a1 1 0 0 1 1.42-1.42zM6.34 5.93l.71.71a1 1 0 0 1-1.41 1.41l-.71-.7a1 1 0 0 1 1.41-1.42zM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8z"/></svg><svg class="moon" viewBox="0 0 24 24"><path d="M12.1 22c-5.5 0-10-4.5-10-10 0-4.8 3.4-8.9 8-9.8.5-.1.9.4.7.9A8 8 0 0 0 20.9 13c.5-.2 1 .2.9.7-.9 4.7-5 8.3-9.7 8.3z"/></svg></span></button>
     </div>
@@ -383,9 +552,19 @@ abbr.term:hover{border-bottom-color:var(--brand-1);color:var(--brand-1)}
 <div class="pop" id="pop" role="tooltip" hidden><b></b><span></span></div>
 <aside class="sidebar" id="sidebar">
   <div class="group">
-    <div class="gt">章节</div>
+    <div class="gt">章节目录 <small>选择阅读</small></div>
     <div class="sec-links" id="f-sec" data-dim="sec"></div>
   </div>
+  <p class="sidebar-footer-note">可按章节浏览，也可以使用顶部搜索和筛选。</p>
+</aside>
+
+<div class="filter-backdrop" id="filter-backdrop" hidden></div>
+<aside class="filter-panel" id="filter-panel" role="dialog" aria-modal="true" aria-labelledby="filter-title" aria-hidden="true" inert>
+  <div class="filter-panel-head">
+    <div><div class="filter-eyebrow">精确查找</div><h2 id="filter-title">筛选条件</h2></div>
+    <button class="filter-close" id="filter-close" type="button" aria-label="关闭筛选"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="filter-panel-scroll">
   <div class="group">
     <div class="gt">性价比 <small>作者判断，同口径内可比</small></div>
     <div class="chips" data-dim="ratio">
@@ -438,12 +617,16 @@ abbr.term:hover{border-bottom-color:var(--brand-1);color:var(--brand-1)}
   <div class="group">
     <label class="toggle"><input type="checkbox" id="f-dispute"> 只看标了争议的</label>
     <label class="toggle"><input type="checkbox" id="f-todo"> 只看有待核实的</label>
-    <button class="reset" id="reset">清空筛选</button>
   </div>
   <div class="hint">
     <p>章节一次只看一个，成本和等级可多选。同一组多选是「或」，不同组之间是「且」。</p>
     <p>每节内按性价比从高到低排，检索不改变顺序。</p>
-    <p>正文与标签来自仓库 <a href="book/">book/</a> 下的 33 个文件，改正文即改这里。</p>
+    <p>筛选只影响当前显示，不会改变原文或你已隐藏的记录。</p>
+  </div>
+  </div>
+  <div class="filter-panel-foot">
+    <button class="reset" id="reset" type="button">清空条件</button>
+    <button class="filter-done" id="filter-done" type="button">查看 <span id="filter-matches">全部</span> 条结果</button>
   </div>
 </aside>
 
@@ -451,9 +634,10 @@ abbr.term:hover{border-bottom-color:var(--brand-1);color:var(--brand-1)}
   <div class="doc">
     <div class="doc-head">
       <h1>高性价比人生指南</h1>
-      <p class="lead">健康、工作、金钱和生活里的常见问题，按章节放在这里，随时可以翻查。</p>
-      <p class="howto">选一个章节，或者直接搜索关键词。条目里可以查看成本、收益、证据等级和来源，需要时再展开细节。</p>
-      <div class="stat" aria-live="polite">当前显示 <b id="cnt">–</b> 条，共 <span id="tot">–</span> 条</div>
+      <p class="lead">关于健康、工作、金钱和日常生活，把值得查的事放在一起。</p>
+      <p class="howto">从目录选一章，或搜索想了解的事。每条建议都能查看依据和出处，不必一次读完。</p>
+      <div class="stat" aria-live="polite"><span>正在显示 <b id="cnt">–</b> 条</span><span class="stat-sep">·</span><span>共收录 <span id="tot">–</span> 条</span></div>
+      <div class="active-filters" id="active-filters" aria-label="已启用的筛选条件" hidden></div>
       <details class="hidden-manage" id="hidden-manage">
         <summary>已隐藏 <span id="hidden-count">0</span> 条 · 可恢复</summary>
         <div class="hidden-panel">
@@ -463,8 +647,13 @@ abbr.term:hover{border-bottom-color:var(--brand-1);color:var(--brand-1)}
           <button class="restore-all" id="restore-all" type="button" hidden>全部恢复</button>
         </div>
       </details>
-      <div class="doc-links">长文：<a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E9%81%87%E5%88%B0%E9%99%8C%E7%94%9F%E4%BA%BA%E5%87%BA%E4%BA%8B%E8%AF%A5%E4%B8%8D%E8%AF%A5%E5%81%9C.md">遇到陌生人出事该不该停</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E5%AE%B6%E5%BA%AD%E5%BA%94%E6%80%A5%E8%A3%85%E5%A4%87%E6%B8%85%E5%8D%95.md">家庭应急装备清单</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E7%BB%93%E5%A9%9A%E5%88%92%E4%B8%8D%E5%88%92%E7%AE%97.md">结婚划不划算</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E5%81%9A%E5%B9%B3%E5%8F%B0%E8%A6%81%E5%8A%9E%E5%93%AA%E4%BA%9B%E8%AF%81.md">做平台要办哪些证</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E7%94%9F%E7%89%A9%E9%92%9F%E5%92%8C%E5%A4%9C%E7%8F%AD.md">生物钟和夜班</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/tree/main/docs/%E6%A0%B8%E5%AE%9E%E8%AE%B0%E5%BD%95">来源核实记录</a></div>
+      <details class="reading-resources" id="reading-resources">
+        <summary><span>延伸阅读与术语解释</span><span class="resources-hint">按需展开</span></summary>
+        <div class="resources-content">
+      <div class="doc-links">长文：<a href="README.md">完整目录与说明</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E9%81%87%E5%88%B0%E9%99%8C%E7%94%9F%E4%BA%BA%E5%87%BA%E4%BA%8B%E8%AF%A5%E4%B8%8D%E8%AF%A5%E5%81%9C.md">遇到陌生人出事该不该停</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E5%AE%B6%E5%BA%AD%E5%BA%94%E6%80%A5%E8%A3%85%E5%A4%87%E6%B8%85%E5%8D%95.md">家庭应急装备清单</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E7%BB%93%E5%A9%9A%E5%88%92%E4%B8%8D%E5%88%92%E7%AE%97.md">结婚划不划算</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E5%81%9A%E5%B9%B3%E5%8F%B0%E8%A6%81%E5%8A%9E%E5%93%AA%E4%BA%9B%E8%AF%81.md">做平台要办哪些证</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/blob/main/docs/%E7%94%9F%E7%89%A9%E9%92%9F%E5%92%8C%E5%A4%9C%E7%8F%AD.md">生物钟和夜班</a> · <a href="https://github.com/eternity4719/HowToLiveBetter/tree/main/docs/%E6%A0%B8%E5%AE%9E%E8%AE%B0%E5%BD%95">来源核实记录</a></div>
       <details class="gloss" id="gloss"><summary>看不懂的缩写和名词</summary><p>正文里带虚线的词，点一下或把鼠标放上去就有解释。全表如下。</p><dl></dl></details>
+        </div>
+      </details>
     </div>
     <div id="list">
       <div class="status" id="status"><span id="status-t">正在读取正文 …</span><div class="bar"><i id="status-b"></i></div></div>
@@ -1032,9 +1221,16 @@ function build(sections){
     const block = document.createElement('section'); block.className='sec-block'; block.dataset.sec = s.n; block.id = 'sec-'+s.n;
     block.innerHTML = `<div class="sec-h"><h2>${s.n}. ${esc(s.title)}</h2><span class="shown"><span class="k"></span> / ${s.entries.length}</span></div>`;
     CUR_SEC = s.n;
+    // 长篇章节说明按需展开，先把建议展示出来；短说明保持直接可读。
+    let introTarget = block;
+    if (s.intro.join('').length > 330){
+      const details = document.createElement('details'); details.className = 'chapter-note';
+      const summary = document.createElement('summary'); summary.textContent = '展开本章导读';
+      details.appendChild(summary); block.appendChild(details); introTarget = details;
+    }
     for (const para of s.intro){
       const p = document.createElement('p'); p.className = 'intro';
-      renderText(p, para, [], false); block.appendChild(p);
+      renderText(p, para, [], false); introTarget.appendChild(p);
     }
     for (const e of s.entries){
       const id = `e-${e.sec}-${e.n}`;
@@ -1107,6 +1303,43 @@ function syncControls(){
   document.getElementById('f-dispute').checked = state.dispute;
   document.getElementById('f-todo').checked = state.todo;
 }
+function syncFilterSummary(shown){
+  const active = document.getElementById('active-filters');
+  const fragment = document.createDocumentFragment();
+  let count = 0;
+  const names = {sec:'章节',ratio:'性价比',lens:'换回',grade:'证据',money:'花钱',time:'时间',will:'毅力'};
+  const labels = {money:{'0':'不花钱','少':'少','多':'多'},time:{'少':'顺手','中':'几小时','多':'每天占用'},will:{'否':'不用','些':'一点','是':'很多'},
+    lens:{'死亡率':'寿命','金钱':'钱','时间':'时间精力','自由':'人身自由'}};
+  function add(dim, val, title){
+    count++;
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'active-filter';
+    button.dataset.filterDim = dim; button.dataset.filterValue = val;
+    button.setAttribute('aria-label', '移除筛选：' + title);
+    const span = document.createElement('span'); span.textContent = title;
+    const cross = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    cross.setAttribute('viewBox', '0 0 24 24');cross.setAttribute('aria-hidden','true');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d','M18 6 6 18M6 6l12 12');cross.appendChild(path);
+    button.append(span, cross);fragment.appendChild(button);
+  }
+  for (const dim of DIMS){
+    for (const value of state[dim]){
+      let val = labels[dim]?.[value] || value;
+      if (dim === 'sec') val = SECS.get(value)?.title || '第 ' + value + ' 章';
+      add(dim,value,names[dim] + ' · ' + val);
+    }
+  }
+  if (state.dispute) add('dispute','1','有争议');
+  if (state.todo) add('todo','1','待核实');
+  if (count > 1){
+    const reset = document.createElement('button');reset.type='button';reset.className='active-filter-clear';
+    reset.dataset.filterDim='all';reset.textContent='清空筛选';fragment.appendChild(reset);
+  }
+  active.replaceChildren(fragment);active.hidden = count === 0;
+  const marker = document.getElementById('filter-count');
+  marker.textContent = count;marker.hidden = count === 0;
+  document.getElementById('filter-matches').textContent = shown;
+}
 // 文字只在搜索词变化时重渲染；筛选按钮只切换显隐，不碰卡片内容
 function renderCard(card, terms, key){
   const {e, f} = card;
@@ -1155,14 +1388,41 @@ function apply(){
   document.getElementById('empty-text').textContent = HIDDEN.size
     ? '当前没有可见条目。可调整筛选，或从上方「已隐藏」恢复条目。'
     : '没有匹配的条目。去掉一个筛选条件，或换个更短的关键词。';
-  syncControls(); writeUrl(); tocSync(spyLast);
+  syncControls(); syncFilterSummary(shown); writeUrl(); tocSync(spyLast);
   PERF.log('apply', t0, `命中 ${shown} 条，重渲染 ${rerender} 张`);
 }
 
 /* ---------- 事件 ---------- */
 function wire(){
   const sb = document.getElementById('sidebar'), bd = document.getElementById('backdrop'), mb = document.getElementById('menu');
+  const panel = document.getElementById('filter-panel'), backdrop = document.getElementById('filter-backdrop'), filterButton = document.getElementById('filter-trigger');
   const setMenu = (on) => { sb.classList.toggle('open', on); bd.classList.toggle('on', on); mb.setAttribute('aria-expanded', String(on)); };
+  const setFilter = on => {
+    if (on) setMenu(false);
+    panel.classList.toggle('open', on);
+    panel.inert = !on;
+    panel.setAttribute('aria-hidden', String(!on));
+    filterButton.setAttribute('aria-expanded', String(on));
+    backdrop.hidden = !on;
+    document.body.classList.toggle('filter-open', on);
+    if (on) document.getElementById('filter-close').focus();
+    else if (panel.contains(document.activeElement)) filterButton.focus();
+  };
+  filterButton.addEventListener('click', () => setFilter(!panel.classList.contains('open')));
+  document.getElementById('filter-close').addEventListener('click', () => setFilter(false));
+  document.getElementById('filter-done').addEventListener('click', () => setFilter(false));
+  backdrop.addEventListener('click', () => setFilter(false));
+  // 在抽屉内保持键盘焦点，不让 Tab 跑到遮罩后的页面。
+  panel.addEventListener('keydown', event => {
+    if (event.key === 'Escape'){event.preventDefault();setFilter(false);return;}
+    if (event.key !== 'Tab') return;
+    const focusables = [...panel.querySelectorAll('button:not([disabled]),input:not([disabled]),a[href]')]
+      .filter(el => el.getClientRects().length && !el.closest('[hidden]'));
+    if (!focusables.length) return;
+    const first = focusables[0], last = focusables[focusables.length-1];
+    if (event.shiftKey && document.activeElement === first){event.preventDefault();last.focus();}
+    else if (!event.shiftKey && document.activeElement === last){event.preventDefault();first.focus();}
+  });
   // 筛选变了就顺手让 spy 重算一次 hash：writeUrl 是无条件把旧 hash 拼回去的，
   // 而滚回顶部时页面若本来就在顶部不会触发 scroll，hash 会僵在一个已经被筛掉的
   // 条目上，拼出 ?sec=8#e-11-1 这种自相矛盾的地址。
@@ -1203,7 +1463,7 @@ function wire(){
     HIDDEN.clear(); saveHidden(); renderHiddenPanel(); apply();
   });
   document.getElementById('hidden-nav').addEventListener('click', () => {
-    setMenu(false); showHiddenPanel();
+    setMenu(false); setFilter(false); showHiddenPanel();
   });
   addEventListener('storage', ev => {
     if (ev.key !== HIDDEN_STORAGE_KEY) return;
@@ -1216,6 +1476,14 @@ function wire(){
   });
   document.getElementById('f-dispute').addEventListener('change', e => { state.dispute = e.target.checked; apply(); toTop(); });
   document.getElementById('f-todo').addEventListener('change', e => { state.todo = e.target.checked; apply(); toTop(); });
+  document.getElementById('active-filters').addEventListener('click', event => {
+    const button = event.target.closest('button[data-filter-dim]'); if (!button) return;
+    const dim = button.dataset.filterDim, value = button.dataset.filterValue;
+    if (dim === 'all'){state.q=''; for (const d of DIMS) state[d].clear();state.dispute=false;state.todo=false;}
+    else if (dim === 'dispute' || dim === 'todo') state[dim] = false;
+    else if (DIMS.includes(dim)) state[dim].delete(value);
+    apply();
+  });
   let tm; document.getElementById('q').addEventListener('input', e => {
     clearTimeout(tm); tm = setTimeout(() => { state.q = e.target.value.trim(); apply(); }, 120);
   });
@@ -1223,8 +1491,8 @@ function wire(){
   document.getElementById('reset').addEventListener('click', reset);
   document.getElementById('reset2').addEventListener('click', reset);
   document.addEventListener('keydown', e => {
-    if (e.key === '/' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); document.getElementById('q').focus(); }
-    if (e.key === 'Escape') { if (document.activeElement.id === 'q') document.activeElement.blur(); setMenu(false); }
+    if (e.key === '/' && !panel.classList.contains('open') && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); document.getElementById('q').focus(); }
+    if (e.key === 'Escape') { if (document.activeElement.id === 'q') document.activeElement.blur(); setFilter(false); setMenu(false); }
   });
   // 术语弹层
   const pop = document.getElementById('pop');
@@ -1236,7 +1504,7 @@ function wire(){
   document.addEventListener('keydown', e => { if (e.key === 'Enter' && document.activeElement.matches?.('abbr.term')) showTerm(document.activeElement); });
   addEventListener('scroll', () => { pop.hidden = true; }, {passive:true});
   // 侧栏（移动端抽屉）
-  mb.addEventListener('click', () => setMenu(!sb.classList.contains('open')));
+  mb.addEventListener('click', () => {setFilter(false);setMenu(!sb.classList.contains('open'));});
   bd.addEventListener('click', () => setMenu(false));
   // 深色模式
   document.getElementById('theme').addEventListener('click', () => {

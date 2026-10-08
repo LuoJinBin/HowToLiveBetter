@@ -54,6 +54,7 @@ jobs:
         with:
           node-version: 22
       - run: node tools/check-refs.mjs --check
+      - run: node tools/check-site.mjs
 
   build:
     runs-on: ubuntu-latest

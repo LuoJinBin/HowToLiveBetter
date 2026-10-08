@@ -32,6 +32,26 @@ assert(/CC BY 4\.0/.test(readme + html) && /eternity4719\/HowToLiveBetter/.test(
 assert(read('robots.txt').includes('luojinbin.github.io/HowToLiveBetter/sitemap.xml') &&
   read('sitemap.xml').includes('luojinbin.github.io/HowToLiveBetter/'),
   '站点地图指向了其他网站');
+
+const sidebarStart = html.indexOf('<aside class="sidebar" id="sidebar">');
+const sidebarEnd = html.indexOf('</aside>', sidebarStart);
+const panelStart = html.indexOf('<aside class="filter-panel" id="filter-panel"');
+const panelEnd = html.indexOf('</aside>', panelStart);
+assert(sidebarStart >= 0 && sidebarEnd > sidebarStart && panelStart > sidebarEnd && panelEnd > panelStart,
+  '章节目录与筛选面板结构异常');
+const navPart = html.slice(sidebarStart, sidebarEnd);
+const panelPart = html.slice(panelStart, panelEnd);
+assert(navPart.includes('id="f-sec"') && !navPart.includes('data-dim="grade"') &&
+  !navPart.includes('data-dim="ratio"'), '章节目录重新混入筛选条件');
+for (const marker of ['id="filter-title"', 'id="filter-close"', 'id="filter-done"', 'id="reset"',
+  'data-dim="ratio"', 'data-dim="lens"', 'data-dim="grade"', 'data-dim="money"',
+  'data-dim="time"', 'data-dim="will"', 'id="f-dispute"', 'id="f-todo"']) {
+  assert(panelPart.includes(marker), '缺少筛选控制：' + marker);
+}
+assert(html.includes('id="filter-trigger"') && html.includes('aria-controls="filter-panel"') &&
+  html.includes('id="filter-backdrop"') && html.includes('id="active-filters"') &&
+  html.includes('id="reading-resources"'), '筛选入口、状态汇总或阅读辅助缺失');
+
 const marker = '\n<script>\n/* ---------- 调试面板';
 const start = html.indexOf(marker), end = html.lastIndexOf('</script>');
 assert(start !== -1 && end > start, '找不到页面主脚本');
