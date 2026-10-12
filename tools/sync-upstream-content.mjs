@@ -3,6 +3,7 @@
 import { cpSync, existsSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { updateNewEntries } from './lib/entry-changes.mjs';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const SRC = resolve(process.argv[2] || '');
@@ -84,6 +85,12 @@ need(!readme.includes('## 广告位') && !readme.includes('mcyyy'), '检查到�
 const finalLinks = [...new Set([...readme.matchAll(/\]\((book\/[^)]+\.md)\)/g)].map(m => m[1].slice(5)))].sort();
 need(JSON.stringify(finalLinks) === JSON.stringify(sourceBook), '生成后的 README 正文文件列表不完整');
 
+// 根据同步前后的真实标题差异计算新增条目；第一次启用时不把已有 677 条误记成新内容。
+const oldBooks=Object.fromEntries(readdirSync(join(ROOT,'book')).filter(f=>/^\d{2}-.+\.md$/.test(f))
+  .map(f=>[f,read('book/'+f)]));
+const nextBooks=Object.fromEntries(sourceBook.map(f=>[f,upstream('book/'+f)]));
+const newEntries=updateNewEntries(oldBooks,nextBooks,JSON.parse(read('data/new-entries.json')));
+
 // 所有源数据检查通过后才更新白名单文件；禁止修改网站 DIY。
 rmSync(join(ROOT, 'book'), { recursive: true, force: true });
 cpSync(join(SRC, 'book'), join(ROOT, 'book'), { recursive: true });
@@ -91,6 +98,7 @@ rmSync(join(ROOT, 'docs'), { recursive: true, force: true });
 cpSync(join(SRC, 'docs'), join(ROOT, 'docs'), { recursive: true });
 writeFileSync(join(ROOT, 'README.md'), readme);
 writeFileSync(join(ROOT, 'LICENSE-CONTENT'), license);
+writeFileSync(join(ROOT, 'data/new-entries.json'), JSON.stringify({version:1,entries:newEntries.entries},null,2)+'\n');
 const sha = execFileSync('git', ['-C', SRC, 'rev-parse', 'HEAD'], {encoding:'utf8'}).trim();
 need(/^[a-f0-9]{40}$/.test(sha), '无法读取上游 Git 提交编号');
 const metadata = '# 正文同步来源\n\n'
@@ -101,4 +109,4 @@ const metadata = '# 正文同步来源\n\n'
   + '- 未同步：index.html、tools/、.github/ 中原项目的代码与样式、广告及赞赏内容\n'
   + '- 正文许可：[CC BY 4.0](LICENSE-CONTENT)\n';
 writeFileSync(join(ROOT, 'UPSTREAM_SOURCE.md'), metadata);
-console.log('同步检查通过：' + sourceBook.length + ' 节；正文 ' + sourceCount[1] + ' 条；上游 ' + sha.slice(0, 12));
+console.log('同步检查通过：' + sourceBook.length + ' 节；正文 ' + sourceCount[1] + ' 条；本轮新增 ' + newEntries.discovered + ' 条；上游 ' + sha.slice(0, 12));
