@@ -16,6 +16,17 @@ check(html.includes('src="favicon.svg"')&&html.includes('href="favicon.svg?v=2"'
 for(const id of ['hidden-section-list','hidden-chapter-count','recent-updates','recent-list','recent-count'])
   check(html.includes('id="'+id+'"'),'缺少元素 '+id);
 check(html.includes('data-hide-sec=')&&html.includes('class="hide-chapter"'),'缺少章节隐藏按钮');
+check(!html.includes('<details class="hidden-manage"') &&
+  html.includes('class="hidden-drawer" id="hidden-manage"') &&
+  html.indexOf('class="hidden-drawer"')<html.indexOf('<main class="content">'),
+  '隐藏管理未从首页移到独立抽屉');
+for (const marker of ['id="hidden-close"','id="hidden-done"','id="hidden-backdrop"',
+  'aria-controls="hidden-manage"','aria-modal="true"'])check(html.includes(marker),'隐藏抽屉缺少必要元素：'+marker);
+check(html.includes("b.hidden=hidden") && html.includes("if(HIDDEN_SECTIONS.has(n))"),
+  '隐藏章节未从左侧目录移除或被自动目录重新展开');
+check(html.includes("if(dim==='sec' && v)") && html.includes("gotoItem('s'+v,spyLast)"),
+  '章节点击无法跳转到对应正文');
+
 check(html.includes("howtolivebetter:hidden-items:v1") &&
  html.includes("howtolivebetter:hidden-sections:v1") &&
  html.includes("howtolivebetter:personal:v1"),'旧隐藏或个性化数据键改变');
