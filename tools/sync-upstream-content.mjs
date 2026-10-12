@@ -70,7 +70,7 @@ need(/正文按节拆成 \d+ 个文件/.test(readme), 'README 章节数说明格
 readme = readme.replace(/正文按节拆成 \d+ 个文件/, '正文按节拆成 ' + sourceBook.length + ' 个文件');
 
 const credit = '\n## 内容来源与许可\n\n'
-  + '本仓库的 book/ 与 docs/ 正文和资料自动同步自 [高性价比人生指南原项目](https://github.com/eternity4719/HowToLiveBetter)，作者 eternity4719。文字依照 [CC BY 4.0](LICENSE-CONTENT) 使用；保留出处和许可链接。本站的页面布局、筛选、隐藏等功能由本仓库单独维护，不与原项目代码同步。原项目更新时，本仓库同步内容可能存在短暂延迟。最新同步版本见 [UPSTREAM_SOURCE.md](UPSTREAM_SOURCE.md)。\n\n';
+  + '本项目是 [eternity4719《高性价比人生指南》原作](https://github.com/eternity4719/HowToLiveBetter) 的**非官方阅读增强版**。book/ 与 docs/ 正文和原始资料由原作者维护，依照 [CC BY 4.0](LICENSE-CONTENT) 署名使用。本站独立维护网页布局、筛选、个性化阅读、章节与单条隐藏恢复和同步记录；不合并原站新页面或脚本。约每 6 小时检查原作内容更新，具体版本见 [同步记录](UPSTREAM_SOURCE.md)；完整差异及未同步范围见 [增强版说明](EDITION.md)。\n\n';
 if (/^## 内容来源与许可$/m.test(readme)) {
   const start = readme.indexOf('## 内容来源与许可\n');
   const end = readme.indexOf('\n## ', start + 4);

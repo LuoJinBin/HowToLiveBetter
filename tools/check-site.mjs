@@ -9,6 +9,13 @@ const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const read = path => readFileSync(resolve(root, path), 'utf8');
 const assert = (ok, why) => { if (!ok) throw new Error('内容与站点检查失败：' + why); };
 const readme = read('README.md'), html = read('index.html');
+const edition=read('EDITION.md');
+assert(html.includes('阅读增强版') && html.includes('id="edition-difference"') &&
+  readme.includes('# 高性价比人生指南 · 阅读增强版') &&
+  /非官方/.test(edition) && /eternity4719/.test(edition),
+  '增强版品牌、差异说明或原作者归属缺失');
+assert(!readme.includes('git clone https://github.com/eternity4719/HowToLiveBetter.git'),
+  '部署增强版的仓库克隆命令仍指向原版');
 const news=JSON.parse(read('data/new-entries.json'));
 assert(news.version===1&&Array.isArray(news.entries),'新增数据清单无效');
 const files = readdirSync(resolve(root,'book')).filter(f => /^\d\d-.+\.md$/.test(f)).sort();
