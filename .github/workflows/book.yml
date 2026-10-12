@@ -56,6 +56,7 @@ jobs:
       - run: node tools/check-refs.mjs --check
       - run: node tools/check-site.mjs
       - run: node tools/check-personal.mjs
+      - run: node tools/check-ui-features.mjs
 
   build:
     runs-on: ubuntu-latest
