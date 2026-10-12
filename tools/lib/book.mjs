@@ -9,7 +9,7 @@ export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 export const REPO = 'https://github.com/LuoJinBin/HowToLiveBetter';
 export const SITE = 'https://luojinbin.github.io/HowToLiveBetter/';
 export const UPSTREAM_REPO = 'https://github.com/eternity4719/HowToLiveBetter';
-export const TITLE = '高性价比人生指南';
+export const TITLE = '高性价比人生指南 · 阅读增强版';
 export const RELEASE = `${REPO}/releases/download/epub-latest`;
 
 // 一律按 LF 交给各套构建：Windows 上 core.autocrlf=true 检出的是 CRLF，离线版脚本
