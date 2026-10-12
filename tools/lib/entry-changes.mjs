@@ -32,10 +32,23 @@ export function updateNewEntries(previousFiles,nextFiles,stored,clock=new Date()
   }
   const addedAt=now.toISOString();
   let discovered=0;
+  const countBySection=keys=>{
+    const totals=new Map();
+    for(const item of keys.values())totals.set(item.sec,(totals.get(item.sec)||0)+1);
+    return totals;
+  };
+  const oldCounts=countBySection(before),newCounts=countBySection(after);
+  const candidates=new Map();
   for(const [key,item] of after){
-    if(!before.has(key) && !active.has(key)){
-      active.set(key,{...item,addedAt}); discovered++;
-    }
+    if(before.has(key)||active.has(key))continue;
+    if(!candidates.has(item.sec))candidates.set(item.sec,[]);
+    candidates.get(item.sec).push(item);
+  }
+  for(const [sec,items] of candidates){
+    const actualGrowth=(newCounts.get(sec)||0)-(oldCounts.get(sec)||0);
+    // 新标题数大于该章条目增长量时，可能是改名或替换；不猜哪条是真新增。
+    if(actualGrowth<=0||items.length!==actualGrowth)continue;
+    for(const item of items){active.set(item.key,{...item,addedAt});discovered++;}
   }
   const entries=[...active.values()]
     .sort((a,b)=>b.addedAt.localeCompare(a.addedAt) || a.sec.localeCompare(b.sec,'zh',{numeric:true}) || a.title.localeCompare(b.title,'zh'))
