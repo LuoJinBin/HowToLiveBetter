@@ -1357,6 +1357,36 @@ function renderHiddenPanel(){
   document.getElementById('hidden-nav').setAttribute('aria-label','管理隐藏内容：'+HIDDEN_SECTIONS.size+' 章、'+saved.length+' 条');
   document.getElementById('restore-all').hidden=total===0;
 }
+
+/* 只有上游同步后真实检测到新增标题才显示，空数据不展示入口 */
+function renderRecentUpdates(data){
+  const panel=document.getElementById('recent-updates'),list=document.getElementById('recent-list');
+  if(!data||data.version!==1||!Array.isArray(data.entries))return;
+  const cutoff=Date.now()-30*86400000;
+  const shown=[];
+  for(const row of data.entries){
+    if(!row||typeof row.key!=='string'||typeof row.addedAt!=='string')continue;
+    const date=Date.parse(row.addedAt);
+    if(!Number.isFinite(date)||date<cutoff||date>Date.now())continue;
+    const card=CARDS.find(c=>c.hiddenKey===row.key);
+    if(card)shown.push({card,date});
+  }
+  shown.sort((a,b)=>b.date-a.date);
+  const fragment=document.createDocumentFragment();
+  for(const {card,date} of shown.slice(0,100)){
+    const row=document.createElement('div');row.className='recent-row';
+    const button=document.createElement('button');button.type='button';
+    button.dataset.newKey=card.hiddenKey;
+    button.textContent='第 '+card.e.sec+' 章 · '+card.e.title;
+    const time=document.createElement('time');
+    time.dateTime=new Date(date).toISOString();time.textContent=new Date(date).toLocaleDateString('zh-CN',{month:'2-digit',day:'2-digit'});
+    row.append(button,time);fragment.appendChild(row);
+  }
+  list.replaceChildren(fragment);
+  panel.hidden=shown.length===0;
+  document.getElementById('recent-count').textContent=shown.length;
+}
+
 function restoreHidden(card){
   if (!HIDDEN.delete(card.hiddenKey)) return;
   saveHidden(); renderHiddenPanel(); apply();
@@ -1946,6 +1976,12 @@ function wire(){
     const card = CARDS.find(item => item.hiddenKey === button.dataset.key);
     if (card) restoreHidden(card);
   });
+  document.getElementById('recent-list').addEventListener('click',ev=>{
+    const button=ev.target.closest?.('button[data-new-key]');if(!button)return;
+    const card=CARDS.find(item=>item.hiddenKey===button.dataset.newKey);
+    if(!card)return;
+    gotoItem(card.e.sec+'-'+card.e.n,spyLast);
+  });
   document.getElementById('hidden-section-list').addEventListener('click',ev=>{
     const button=ev.target.closest?.('.restore-section');if(!button)return;
     HIDDEN_SECTIONS.delete(button.dataset.sec);saveHiddenSections();renderHiddenPanel();apply();
@@ -2233,6 +2269,9 @@ document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !DM.mask
     status.remove();
     const t2 = performance.now(); build(sections); PERF.log('建 DOM', t2, CARDS.length + ' 张卡');
     buildGlossary(); readUrl(); wire(); syncPersonalUI(); apply();
+    if(EMBED)renderRecentUpdates(EMBED.recentEntries);
+    else readText('data/new-entries.json').then(JSON.parse).then(renderRecentUpdates).catch(()=>{});
+
     PERF.mark(`DOM 节点 ${document.getElementsByTagName('*').length}，术语 ${GLOSS.length}`);
     if (location.hash){
       let target = document.getElementById(location.hash.slice(1));
