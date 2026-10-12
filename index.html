@@ -8,10 +8,10 @@
 <meta name="keywords" content="长寿,健康,循证,总死亡率,省钱,理财,防骗,急救,法律常识,失业救助,劳动仲裁,创业风险,性价比">
 <meta name="author" content="高性价比人生指南">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
-<meta name="theme-color" content="#3451b2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#356c60" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1b1b1f" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://luojinbin.github.io/HowToLiveBetter/">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%233451b2'/%3E%3Cpath d='M17 33l10 11 20-24' fill='none' stroke='white' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="高性价比人生指南">
 <meta property="og:locale" content="zh_CN">
@@ -542,6 +542,36 @@ body.person-ready .personal-card-menu{display:block}
  .personal-field label:has(input){width:100%}.personal-card-menu summary{padding:5px 2px}.personal-card-menu[open] .personal-card-actions{right:-18px}}
 @media(prefers-reduced-motion:reduce){.personal-panel{transition:none}}
 
+
+/* 章节隐藏：按钮轻量，管理恢复入口跟原有逐条隐藏统一 */
+.logo{background:none!important;border:0!important;overflow:hidden}
+.logo img{display:block;width:100%;height:100%;border-radius:7px}
+.sec-h .shown{white-space:nowrap}
+.hide-chapter{flex:none;align-self:baseline;font-size:12px;color:var(--t3);padding:5px 6px;border-radius:5px;white-space:nowrap}
+.hide-chapter:hover,.hide-chapter:focus-visible{color:var(--brand-1);background:var(--brand-soft)}
+.hidden-section-heading{margin:13px 0 3px;font-size:12px;font-weight:650;color:var(--t3);letter-spacing:.02em}
+.hidden-section-row{display:flex;gap:13px;align-items:center;padding:11px 0;border-top:1px solid var(--divider)}
+.hidden-section-row .restore-section{flex:none;border:1px solid var(--divider);border-radius:5px;padding:5px 9px;font-size:12.5px}
+.hidden-section-row .restore-section:hover{border-color:var(--brand-1);color:var(--brand-1)}
+.hidden-section-meta{font-size:12px;color:var(--t3)}
+.hidden-section-label{flex:1;min-width:0;line-height:1.65;font-size:13px;overflow-wrap:anywhere}
+.sec-link.is-hidden{opacity:.58}
+.sec-link.is-hidden>span{text-decoration:line-through;text-decoration-color:var(--divider)}
+/* 新增条目：不打扰老用户，数据存在时才展示低对比度折叠摘要 */
+.recent-updates{border-top:1px solid var(--divider);margin:0 0 8px}
+.recent-updates>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:6px;min-height:39px;color:var(--t3);font-size:12.5px}
+.recent-updates>summary::-webkit-details-marker{display:none}
+.recent-updates>summary:hover,.recent-updates[open]>summary{color:var(--brand-1)}
+.recent-arrow{font-size:15px;transition:transform .15s}
+.recent-updates[open] .recent-arrow{transform:rotate(180deg)}
+.recent-body{padding:2px 0 15px}
+.recent-body>p{font-size:12px!important;line-height:1.75!important;color:var(--t3)!important;margin:0 0 8px!important}
+.recent-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-top:1px solid var(--divider)}
+.recent-row button{flex:1;text-align:left;min-width:0;font-size:13px;color:var(--t1);line-height:1.6;overflow-wrap:anywhere}
+.recent-row button:hover{color:var(--brand-1);text-decoration:underline;text-underline-offset:3px}
+.recent-row time{color:var(--t3);font-size:11px;flex:none;white-space:nowrap;padding-top:2px}
+@media(max-width:590px){.sec-h{gap:6px;flex-wrap:wrap}.hide-chapter{font-size:11.5px;padding:5px 4px}.sec-h h2{flex:1;min-width:0}.recent-row{gap:7px}}
+
 </style>
 
 <!-- ga:start 这两行注释是离线构建的剥离标记（tools/offline/build.mjs），别删 -->
@@ -588,7 +618,7 @@ body.person-ready .personal-card-menu{display:block}
 <header class="nav">
   <div class="nav-in">
     <button class="icon-btn menu-btn" id="menu" aria-label="打开章节目录" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></button>
-    <a class="title" href="./"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>高性价比人生指南</span></a>
+    <a class="title" href="./"><span class="logo" aria-hidden="true"><img src="favicon.svg" width="30" height="30" alt=""></span><span>高性价比人生指南</span></a>
     <label class="search">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg>
       <input id="q" type="search" placeholder="搜索条目" autocomplete="off" aria-label="搜索条目">
@@ -597,7 +627,6 @@ body.person-ready .personal-card-menu{display:block}
     <div class="nav-r">
       <button class="filter-trigger" id="filter-trigger" type="button" aria-controls="filter-panel" aria-expanded="false" aria-haspopup="dialog" title="打开筛选条件"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4" /></svg><span class="filter-trigger-label">筛选</span><span class="filter-count" id="filter-count" hidden>0</span></button>
       <button class="personal-trigger" id="personal-trigger" type="button" aria-controls="personal-panel" aria-expanded="false" aria-haspopup="dialog" title="我的阅读设置"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="3.5"/><path d="M5 20c.4-4 3-6 7-6s6.6 2 7 6"/></svg><span>我的阅读</span></button>
-      <a class="icon-btn nav-readme" href="README.md" title="查看 README.md" aria-label="README"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6zm8 1.5V8h4.5zM8 12h8v1.5H8zm0 3.5h8V17H8z"/></svg></a>
       <button class="icon-btn" id="hidden-nav" type="button" title="管理已隐藏的条目" aria-label="管理已隐藏的条目"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A11.7 11.7 0 0 1 12 5c5 0 8.9 4 10 7a13 13 0 0 1-3.1 4.4M6.2 6.3A12.5 12.5 0 0 0 2 12c1.1 3 5 7 10 7 1.6 0 3.1-.4 4.4-1.1M9.9 10a3 3 0 0 0 4.1 4.1"/></svg><span class="hidden-num" id="hidden-nav-count" hidden>0</span></button>
       <button class="switch" id="theme" aria-label="切换深色模式" title="切换深色模式"><span class="knob"><svg class="sun" viewBox="0 0 24 24"><path d="M12 4a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0V5a1 1 0 0 1 1-1zm0 13a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1zm8-6a1 1 0 1 1 0 2h-1a1 1 0 1 1 0-2zM5 11a1 1 0 1 1 0 2H4a1 1 0 1 1 0-2zm12.07-5.07a1 1 0 0 1 0 1.41l-.7.71a1 1 0 1 1-1.42-1.41l.71-.71a1 1 0 0 1 1.41 0zM8.05 16.95a1 1 0 0 1 0 1.41l-.7.71a1 1 0 1 1-1.42-1.41l.71-.71a1 1 0 0 1 1.41 0zm9.02 0l.7.71a1 1 0 1 1-1.41 1.41l-.71-.7a1 1 0 0 1 1.42-1.42zM6.34 5.93l.71.71a1 1 0 0 1-1.41 1.41l-.71-.7a1 1 0 0 1 1.41-1.42zM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8z"/></svg><svg class="moon" viewBox="0 0 24 24"><path d="M12.1 22c-5.5 0-10-4.5-10-10 0-4.8 3.4-8.9 8-9.8.5-.1.9.4.7.9A8 8 0 0 0 20.9 13c.5-.2 1 .2.9.7-.9 4.7-5 8.3-9.7 8.3z"/></svg></span></button>
     </div>
@@ -761,12 +790,20 @@ body.person-ready .personal-card-menu{display:block}
       <div class="stat" aria-live="polite"><span>正在显示 <b id="cnt">–</b> 条</span><span class="stat-sep">·</span><span>共收录 <span id="tot">–</span> 条</span></div>
       <div class="active-filters" id="active-filters" aria-label="已启用的筛选条件" hidden></div>
       <details class="hidden-manage" id="hidden-manage">
-        <summary>已隐藏 <span id="hidden-count">0</span> 条 · 可恢复</summary>
+        <summary>已隐藏 <span id="hidden-chapter-count">0</span> 章 · <span id="hidden-count">0</span> 条 · 可恢复</summary>
         <div class="hidden-panel">
           <p class="hidden-note">隐藏记录只保存在当前浏览器。清除网站数据可能使记录丢失；清空筛选不会恢复隐藏的条目。</p>
           <p class="hidden-warning" id="hidden-storage-warning" role="status" hidden>浏览器无法读取或保存隐藏记录。请允许此网站使用本地存储，否则关闭页面后隐藏状态可能丢失。</p>
+          <div class="hidden-list" id="hidden-section-list"></div>
           <div class="hidden-list" id="hidden-list"></div>
-          <button class="restore-all" id="restore-all" type="button" hidden>全部恢复</button>
+          <button class="restore-all" id="restore-all" type="button" hidden>恢复所有隐藏（含章节）</button>
+        </div>
+      </details>
+      <details class="recent-updates" id="recent-updates" hidden>
+        <summary>最近新增 <span id="recent-count">0</span> 条 <span class="recent-arrow" aria-hidden="true">⌄</span></summary>
+        <div class="recent-body">
+          <p>以下是本站从上游同步时检测到的新增建议（近 30 天）；日期是同步发现时间，不代表原文最初发表时间。</p>
+          <div id="recent-list"></div>
         </div>
       </details>
       <details class="reading-resources" id="reading-resources">
@@ -1519,7 +1556,7 @@ function build(sections){
     fsec.appendChild(sub); TOC_SEC.set(s.n, sub);
 
     const block = document.createElement('section'); block.className='sec-block'; block.dataset.sec = s.n; block.id = 'sec-'+s.n;
-    block.innerHTML = `<div class="sec-h"><h2>${s.n}. ${esc(s.title)}</h2><span class="shown"><span class="k"></span> / ${s.entries.length}</span></div>`;
+    block.innerHTML = `<div class="sec-h"><h2>${s.n}. ${esc(s.title)}</h2><span class="shown"><span class="k"></span> / ${s.entries.length}</span><button class="hide-chapter" type="button" data-hide-sec="${s.n}" aria-label="隐藏第 ${s.n} 章">隐藏本章</button></div>`;
     CUR_SEC = s.n;
     // 长篇章节说明按需展开，先把建议展示出来；短说明保持直接可读。
     let introTarget = block;
