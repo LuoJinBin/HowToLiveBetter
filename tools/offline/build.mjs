@@ -21,6 +21,7 @@ const corpus = {
   readme,
   parts: Object.fromEntries(files.map(f => [f, read(f)])),
   docs: Object.fromEntries(docs.map(f => [f, read(f)])),
+  recentEntries: JSON.parse(read('data/new-entries.json')),
 };
 // </script 会提前关掉脚本标签；\/ 在 JS 字符串里就是 /，内容不变
 const corpusJson = JSON.stringify(corpus).replace(/<\/script/gi, '<\\/script');
@@ -47,6 +48,13 @@ html = html
   .replaceAll('href="book/"', `href="${REPO}/tree/main/book"`)
   .replaceAll('<a class="title" href="./"', `<a class="title" href="${SITE}"`);
 
+
+// 单文件版内联共享图标，断网也不会丢失左上角及浏览器标签图。
+const iconData = 'data:image/svg+xml,' + encodeURIComponent(read('favicon.svg'));
+must('src="favicon.svg"', '书本标志');
+must('href="favicon.svg?v=2"', '浏览器标签图标');
+html = html.replaceAll('src="favicon.svg"', 'src="' + iconData + '"')
+  .replaceAll('href="favicon.svg?v=2"', 'href="' + iconData + '"');
 
 // 页脚注明这是哪一版的离线副本
 const foot = '<div class="foot">';

@@ -9,6 +9,8 @@ const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const read = path => readFileSync(resolve(root, path), 'utf8');
 const assert = (ok, why) => { if (!ok) throw new Error('内容与站点检查失败：' + why); };
 const readme = read('README.md'), html = read('index.html');
+const news=JSON.parse(read('data/new-entries.json'));
+assert(news.version===1&&Array.isArray(news.entries),'新增数据清单无效');
 const files = readdirSync(resolve(root,'book')).filter(f => /^\d\d-.+\.md$/.test(f)).sort();
 const linked = [...new Set([...readme.matchAll(/\]\((book\/[^)#]+\.md)\)/g)].map(m => m[1].slice(5)))].sort();
 assert(files.length >= 33 && JSON.stringify(files) === JSON.stringify(linked), 'README 章节清单与 book/ 不一致');
@@ -52,6 +54,9 @@ assert(html.includes('id="filter-trigger"') && html.includes('aria-controls="fil
   html.includes('id="filter-backdrop"') && html.includes('id="active-filters"') &&
   html.includes('id="reading-resources"'), '筛选入口、状态汇总或阅读辅助缺失');
 
+assert(html.includes('id="hidden-section-list"') && html.includes('id="recent-updates"') &&
+  html.includes('src="favicon.svg"') && !html.includes('class="icon-btn nav-readme"'),
+  '章节隐藏、最近新增或新图标未接入');
 assert(html.includes('id="personal-trigger"') && html.includes('id="personal-form"') &&
   html.includes('id="personal-mode-switch"') && html.includes('id="personal-panel"') &&
   html.includes('PERSON_STORAGE_KEY') && html.includes('PERSON.configured'),
