@@ -1,0 +1,77 @@
+name: 临时章节与新增浏览器验收
+on:
+  pull_request:
+    paths:
+      - index.html
+      - favicon.svg
+      - .github/workflows/chapters-preview.yml
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate real Chrome hide-restore and latest entries
+        shell: bash
+        run: |
+          set -euo pipefail
+          BROWSER="$(command -v google-chrome || command -v chromium)"
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends fonts-noto-cjk >/dev/null
+          python3 -m http.server 8765 >/tmp/http.log 2>&1 &
+          sleep 2
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          script="""
+          <script>
+          window.addEventListener('load',async()=>{
+            const wait=ms=>new Promise(r=>setTimeout(r,ms)),checks=[];
+            const ck=(yes,label)=>checks.push([!!yes,label]);
+            const n=()=>Number(document.getElementById('cnt').textContent);
+            try{
+              for(let i=0;i<100;i++){if(n()>600)break;await wait(100);}
+              const total=n();
+              ck(total>600 && !document.getElementById('recent-updates').hidden===false,'no false new items before first sync');
+              ck(document.querySelector('.logo img')?.getAttribute('src')==='favicon.svg','book logo present');
+              ck(!document.querySelector('.nav-readme'),'removed document nav');
+              const s1=document.getElementById('sec-1');
+              const count1=s1.querySelectorAll('.card').length;
+              s1.querySelector('.hide-chapter').click();
+              ck(n()===total-count1,'hide whole chapter');
+              ck(JSON.parse(localStorage.getItem('howtolivebetter:hidden-sections:v1')).includes('1'),'chapter saved');
+              ck(!s1.offsetParent,'hidden chapter disappears');
+              ck(document.getElementById('hidden-chapter-count').textContent==='1','count hidden chapters');
+              HIDDEN_SECTIONS.clear();readHiddenSections();apply();
+              ck(!s1.offsetParent,'refresh simulation restores hidden chapter');
+              const c2=document.querySelector('#sec-2 .card');
+              c2.querySelector('.hide-item').click();
+              ck(n()===total-count1-1,'individual hide remains independent');
+              document.querySelector('#hidden-section-list .restore-section').click();
+              ck(n()===total-1,'restoring chapter leaves individual hidden');
+              document.querySelector('#hidden-list .restore-item').click();
+              ck(n()===total,'individual restore');
+              const c=document.querySelector('#sec-2 .card');
+              const key=JSON.stringify(['2',c.querySelector('.t').textContent]);
+              renderRecentUpdates({version:1,entries:[{key,sec:'2',title:c.querySelector('.t').textContent,addedAt:new Date().toISOString()}]});
+              ck(!document.getElementById('recent-updates').hidden&&document.getElementById('recent-count').textContent==='1','verified new update expands');
+              renderRecentUpdates({version:1,entries:[]});
+              ck(document.getElementById('recent-updates').hidden,'empty recent hidden');
+              ck(!localStorage.getItem('howtolivebetter:hidden-sections:v1') || JSON.parse(localStorage.getItem('howtolivebetter:hidden-sections:v1')).length===0,'chapter restore persisted');
+              document.documentElement.dataset.chapterQa=checks.every(t=>t[0])?'PASS':'FAIL';
+              document.documentElement.dataset.chapterQaDetails=checks.filter(t=>!t[0]).map(t=>t[1]).join(',');
+            }catch(e){
+              document.documentElement.dataset.chapterQa='ERROR';document.documentElement.dataset.chapterQaDetails=String(e.message||e);
+            }
+          });
+          </script>
+          """
+          p.write_text(s.replace('</body>',script+'</body>'))
+          PY
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=30000 --window-size=1440,900 --dump-dom http://127.0.0.1:8765/ >/tmp/chapter-dom.txt 2>/tmp/chapter-errors.txt
+          grep -o 'data-chapter-qa="[^"]*"' /tmp/chapter-dom.txt || true
+          grep -o 'data-chapter-qa-details="[^"]*"' /tmp/chapter-dom.txt || true
+          grep -q 'data-chapter-qa="PASS"' /tmp/chapter-dom.txt
+          echo "CHAPTER_BROWSER_PASS"
