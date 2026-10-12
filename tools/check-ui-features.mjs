@@ -24,7 +24,7 @@ for (const marker of ['id="hidden-close"','id="hidden-done"','id="hidden-backdro
   'aria-controls="hidden-manage"','aria-modal="true"'])check(html.includes(marker),'隐藏抽屉缺少必要元素：'+marker);
 check(html.includes("b.hidden=hidden") && html.includes("if(HIDDEN_SECTIONS.has(n))"),
   '隐藏章节未从左侧目录移除或被自动目录重新展开');
-check(html.includes("gotoItem('s'+v,spyLast)") && !html.includes("apply(); toTop();"),
+check(html.includes("if(dim==='sec' && v)") && html.includes("gotoItem('s'+v,spyLast)"),
   '章节点击无法跳转到对应正文');
 
 check(html.includes("howtolivebetter:hidden-items:v1") &&
