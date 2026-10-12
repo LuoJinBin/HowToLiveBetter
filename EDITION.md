@@ -35,7 +35,7 @@
 ## 数据、来源与许可
 
 - 内容来源：[eternity4719/HowToLiveBetter](https://github.com/eternity4719/HowToLiveBetter)。正文及资料依照 [CC BY 4.0](LICENSE-CONTENT) 署名使用，引用、修改时请遵守许可条件。
-- 自行维护的部分：网页界面、导航、筛选面板、个性化设置、隐藏与恢复、阅读记录的本地保存机制、真实新增检测及其构建工作流。
+- 自行维护的部分：网页界面、导航、筛选面板、个性化设置、隐藏与恢复、偏好及隐藏记录的本地保存机制、真实新增检测及其构建工作流。
 - 同步范围：`book/`、`docs/`、README 的内容型目录与统计等；不同步原作代码及新工具页。详见 [同步来源与版本](UPSTREAM_SOURCE.md)。
 - 所有个人设置、已隐藏章节与条目均存放在本地浏览器；普通刷新不会清空，但清理站点数据可能丢失。
 - **独立衍生版本，不是原作者官方发布或认证。** 阅读工具的反馈可在 [本站 GitHub Issues](https://github.com/LuoJinBin/HowToLiveBetter/issues) 提出；原文内容的事实核实请先查看 [原作](https://github.com/eternity4719/HowToLiveBetter)。
