@@ -1,27 +1,44 @@
 <div align="center">
 
-<img src="og.png" alt="高性价比人生指南 —— 用最少的钱、时间和精力，换回最多的寿命、金钱和人身自由" width="820">
+<img src="og.png" alt="高性价比人生指南 · 阅读增强版——非官方独立阅读工具，原文同步自 eternity4719" width="820">
 
-# 高性价比人生指南
+# 高性价比人生指南 · 阅读增强版
+
+**非官方独立阅读增强版** · 原作：[eternity4719/HowToLiveBetter](https://github.com/eternity4719/HowToLiveBetter) · [与原版的完整区别](EDITION.md)
+
+这是一个面向个人长期使用的阅读器：原作者负责正文与证据核实，本站独立维护个性化筛选、隐藏与恢复、阅读导航和自动更新，**不代表原作者官方发布**。<br>
+第一次打开不改变任何建议，想用个性化时再主动设置，也能随时切回全部。
 
 讲怎么活得久、怎么少生病，出了意外怎么救。讲怎么少花冤枉钱，哪些事会让人被骗、摊上官司。讲没工作没钱时能去领什么，开店、开公司、做网站要办什么手续。也讲恋爱结婚生孩子、出国和学手艺。<br>
 687 条建议，每条写明花掉什么、换回什么、证据有多硬，来源只引期刊论文和官方文件。
 
 不用全做：这是按性价比排好的备选单，不是任务清单——挑走一两条就算数，作者自己也没做到其中大部分。
 
-[![在线检索](https://img.shields.io/badge/%E5%9C%A8%E7%BA%BF%E6%A3%80%E7%B4%A2-%E7%82%B9%E8%BF%99%E9%87%8C%E6%89%93%E5%BC%80-3451b2?style=flat-square)](https://luojinbin.github.io/HowToLiveBetter/)
+[![阅读增强版](https://img.shields.io/badge/%E9%98%85%E8%AF%BB-%E5%A2%9E%E5%BC%BA%E7%89%88-356c60?style=flat-square)](https://luojinbin.github.io/HowToLiveBetter/)
 [![条目](https://img.shields.io/badge/%E6%9D%A1%E7%9B%AE-687%20%E6%9D%A1-18794e?style=flat-square)](#目录)
 [![证据分级](https://img.shields.io/badge/%E8%AF%81%E6%8D%AE%E5%88%86%E7%BA%A7-A%20450%20%C2%B7%20B%20190%20%C2%B7%20C%2047-915930?style=flat-square)](#证据分级)
 [![原始文献](https://img.shields.io/badge/%E5%8E%9F%E5%A7%8B%E6%96%87%E7%8C%AE-1816%20%E6%9D%A1%E9%93%BE%E6%8E%A5-565a5f?style=flat-square)](docs/核实记录/)
 [![许可](https://img.shields.io/badge/%E6%AD%A3%E6%96%87-CC%20BY%204.0-565a5f?style=flat-square)](LICENSE-CONTENT)
 
-**[打开在线检索页](https://luojinbin.github.io/HowToLiveBetter/)** · [下载 PDF](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.pdf) · [下载 EPUB](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.epub) · [下载离线单文件（HTML）](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.html) · [目录](#目录) · [术语表](#读懂数字术语表) · [核实记录](docs/核实记录/) · [结婚划不划算（长文）](docs/结婚划不划算.md) · [家庭应急装备清单（长文）](docs/家庭应急装备清单.md) · [遇到陌生人出事该不该停（长文）](docs/遇到陌生人出事该不该停.md) · [做平台要办哪些证（长文）](docs/做平台要办哪些证.md) · [生物钟和夜班（长文）](docs/生物钟和夜班.md)
+**[打开在线检索页](https://luojinbin.github.io/HowToLiveBetter/)** · [下载 PDF](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.pdf) · [下载 EPUB](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.epub) · [下载离线单文件（HTML）](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.html) · [与原版的区别](EDITION.md) · [目录](#目录) · [术语表](#读懂数字术语表) · [核实记录](docs/核实记录/) · [结婚划不划算（长文）](docs/结婚划不划算.md) · [家庭应急装备清单（长文）](docs/家庭应急装备清单.md) · [遇到陌生人出事该不该停（长文）](docs/遇到陌生人出事该不该停.md) · [做平台要办哪些证（长文）](docs/做平台要办哪些证.md) · [生物钟和夜班（长文）](docs/生物钟和夜班.md)
 
 其他语言：[English](https://dlgrv.github.io/HowToLiveBetter/en/) · [Русский](https://dlgrv.github.io/HowToLiveBetter/ru/) · [Español](https://dlgrv.github.io/HowToLiveBetter/es/) —— 由 [dlgrv](https://github.com/dlgrv) 维护的非官方翻译（[仓库](https://github.com/dlgrv/HowToLiveBetter)），译文按翻译当时的中文正文做，之后新增和改动的条目不一定跟上，一切以本仓库的中文原文为准。
 
 </div>
 
 ---
+
+## 阅读增强版和原版的区别
+
+本站不是复制了原作者的网页再改一个名字，而是独立维护的阅读方式：
+
+- **内容来自原版**：章节、建议、数字、证据、来源和原始排序，以 [原项目](https://github.com/eternity4719/HowToLiveBetter) 为基础。
+- **阅读方式由本站维护**：手机/桌面阅读布局、顶部筛选与章节定位、单条和整章隐藏及恢复、个人偏好模式、随便看看、最近新增。
+- **内容持续同步**：约每 6 小时检查原项目正文和资料变化。新增的网站工具或功能不会自动合并，原版的独立生活自查页目前需要前往原站使用。
+- **偏好由自己掌握**：默认完整显示，不强迫设置；隐藏和个性化存放在当前浏览器，可导入导出，没有云端账户。
+- **身份清楚**：这是非官方衍生阅读版；原文遵循 [CC BY 4.0](LICENSE-CONTENT)，关于阅读器的反馈发到本站，原文的问题仍以原项目为准。
+
+[查看完整差异、更新范围和许可说明](EDITION.md) · [原作者网站](https://eternity4719.github.io/HowToLiveBetter/)
 
 ## 这本书想回答的问题
 
@@ -66,7 +83,7 @@
 
 - **不用全做**：这是一份按性价比排好的备选单，不是任务清单。挑走一两条就算数，剩下的放着，需要时再回来查。「说着容易做着难」这个评价是对的——作者自己也没做到其中大部分，写下来是为了要用的时候找得到。想挑省力的，看下面「只想看最值得做的」那条。
 - **想按条件挑**：打开[在线检索页](https://luojinbin.github.io/HowToLiveBetter/)，可以按关键词、章节、证据等级来筛，也可以按「花不花钱、花多少时间、要不要毅力」这三样筛，几个条件能叠着用。页面上的内容直接取自 book/ 目录里的正文，正文一改，页面跟着改。
-- **条目之间会互相指路**（「见第 8 节第 17 条」这种）：在检索页里，这种指路带一条虚线。点一下，就地显示被指的那条的标题和「说人话」。想真的翻过去，再按「跳过去」。那一条正好被筛选条件藏起来了，页面会自动把筛选清掉。在 GitHub 上直接读正文点不动，但每处指路后面都写着指向什么（「见第 18 条（借钱写清借条）」）。不翻过去也知道说的是哪条。
+- **条目之间会互相指路**（「见第 8 节第 17 条」这种）：在检索页里，这种指路带一条虚线。点一下，就地显示被指的那条的标题和「说人话」。想真的翻过去，再按「跳过去」。那一条正好被筛选条件藏起来了，页面会自动把筛选清掉。在 GitHub 上直接读 Markdown 正文时点不动，但每处指路后面都写着指向什么（「见第 18 条（借钱写清借条）」）。不翻过去也知道说的是哪条。
 - **想按顺序读**：每节内的条目按性价比从高到低排列，从每节前几条开始看就行。
 - **想让 AI 帮你查**：仓库里带了一个中文 skill（[skills/life-decision-guide](skills/life-decision-guide/)），Claude Code 和 Codex 都能装。装上以后直接问「替朋友担保签不签」「每天通勤两小时值不值」。它会先把相关条目从正文里查出来，再照书里的算账方式排序回答，并注明出自第几节第几条。查不到就说查不到，不自己编数字。装法见 [那个目录的说明](skills/life-decision-guide/README.md)。
 - **想离线看、想发给别人**：下载 [离线单文件 HTML](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.html)，整本书连同检索和筛选都在这一个文件里，双击就开，不用服务器也不用联网，微信里也能直接传。
@@ -97,12 +114,12 @@
 真要在自己电脑或服务器上跑：
 
 ```bash
-git clone https://github.com/eternity4719/HowToLiveBetter.git
+git clone https://github.com/LuoJinBin/HowToLiveBetter.git
 cd HowToLiveBetter
 python -m http.server 8000
 ```
 
-然后浏览器开 `http://localhost:8000/`。检索页是纯静态的，`README.md` 和 `book/` 就是它的数据，没有后端、没有数据库、不用装依赖；把整个目录丢给任何静态服务器（Nginx、GitHub Pages、对象存储）效果一样。注意 `index.html` 必须经 http 打开，直接双击本地文件会空白——浏览器不许网页读本地文件，那种场景请用上面的离线单文件版。
+然后浏览器开 `http://localhost:8000/`。上面克隆的是**阅读增强版**；想部署原作者原版，请使用 [原项目仓库](https://github.com/eternity4719/HowToLiveBetter)。检索页是纯静态的，`README.md` 和 `book/` 就是它的数据，没有后端、没有数据库、不用装依赖；把整个目录丢给任何静态服务器（Nginx、GitHub Pages、对象存储）效果一样。注意 `index.html` 必须经 http 打开，直接双击本地文件会空白——浏览器不许网页读本地文件，那种场景请用上面的离线单文件版。
 
 想自己生成三样电子版（平时用不着，Release 里的就是自动生成的）：
 
@@ -253,7 +270,7 @@ A 级只说明「有具体数字、出处可核」，不说明这个数字一定
 
 每节内条目按性价比从高到低排列。「不要早死」「不要浪费时间」这类节标题说的是这一节想防住的结果，条目本身要做还是别做，以条目标题为准。长文另见 [docs/家庭应急装备清单.md](docs/家庭应急装备清单.md)、[docs/做平台要办哪些证.md](docs/做平台要办哪些证.md)、[docs/结婚划不划算.md](docs/结婚划不划算.md) 、[docs/遇到陌生人出事该不该停.md](docs/遇到陌生人出事该不该停.md)、[docs/生物钟和夜班.md](docs/生物钟和夜班.md)，以及四份按时间排的场景清单：[docs/被裁了之后先做什么.md](docs/被裁了之后先做什么.md)、[docs/孩子出生前后要办的事.md](docs/孩子出生前后要办的事.md)、[docs/刚确诊慢性病之后.md](docs/刚确诊慢性病之后.md) 和 [docs/换工作、换城市之前.md](docs/换工作、换城市之前.md)。每条来源的核实过程记录在 [docs/核实记录](docs/核实记录/)。
 
-本书在 Claude Code 协助下编写：查找原始文献、逐条核对数字与原文是否一致、维护交叉引用和构建脚本。选题、取舍和最终审定由作者负责，每条数字都能在来源栏的原文里找到。
+原作者在原项目的说明中提到，本书在 Claude Code 协助下编写：查找原始文献、逐条核对数字与原文是否一致、维护交叉引用和构建脚本。原文选题、取舍和最终审定由原作者负责，每条数字都能在来源栏的原文里找到。
 
 仓库根目录的 `index.html` 是在线检索页：按关键词、章节、证据等级和成本维度（花钱、花时间、要毅力）筛选条目，数据直接读本文件。在仓库设置里开启 GitHub Pages（Deploy from a branch，分支 main，目录 /）后即可访问。`tools/epub/` 是电子书生成脚本，`cd tools/epub && npm ci && npm run build` 在本地出一本 EPUB 到 `dist/`；GitHub Actions 在正文改动后自动跑同一个脚本并更新 Release。
 
