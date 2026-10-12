@@ -16,6 +16,18 @@ check(html.includes('src="favicon.svg"')&&html.includes('href="favicon.svg?v=2"'
 for(const id of ['hidden-section-list','hidden-chapter-count','recent-updates','recent-list','recent-count'])
   check(html.includes('id="'+id+'"'),'缺少元素 '+id);
 check(html.includes('data-hide-sec=')&&html.includes('class="hide-chapter"'),'缺少章节隐藏按钮');
+
+check(html.includes('class="hidden-chapter-directory" id="hidden-section-list"') &&
+  !html.includes('id="hidden-list"'), '隐藏列表未合并成单一章节目录');
+for(const className of ['hidden-chapter-toggle','hidden-chapter-items','hidden-entry-detail','hidden-entry-preview'])
+  check(html.includes(className), '章节展开及条目预览缺失：'+className);
+check(html.includes("const byChapter=new Map()") &&
+  html.includes("if(!ownHidden&&!wholeHidden)continue") &&
+  html.includes("const ownCount=entries.filter") &&
+  html.includes("sectionButton.dataset.restoreScope==='chapter'"), '隐藏数据未按章节合并或恢复功能区分错误');
+check(html.includes("preview.appendChild(p)") && html.includes("document.createTextNode(content)"),
+  '预览内容未使用安全的纯文本生成');
+
 check(!html.includes('<details class="hidden-manage"') &&
   html.includes('class="hidden-drawer" id="hidden-manage"') &&
   html.indexOf('class="hidden-drawer"')<html.indexOf('<main class="content">'),
