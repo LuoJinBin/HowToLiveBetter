@@ -572,6 +572,31 @@ body.person-ready .personal-card-menu{display:block}
 .recent-row time{color:var(--t3);font-size:11px;flex:none;white-space:nowrap;padding-top:2px}
 @media(max-width:590px){.sec-h{gap:6px;flex-wrap:wrap}.hide-chapter{font-size:11.5px;padding:5px 4px}.sec-h h2{flex:1;min-width:0}.recent-row{gap:7px}}
 
+
+/* 已隐藏内容：独立抽屉，不再占据阅读首页 */
+.hidden-backdrop{position:fixed;inset:0;z-index:64;background:rgba(14,25,20,.36);backdrop-filter:blur(2px)}
+.hidden-drawer{position:fixed;z-index:65;inset:0 0 0 auto;width:min(520px,100vw);display:flex;flex-direction:column;
+  background:var(--bg-elv);border-left:1px solid var(--divider);box-shadow:-14px 0 42px rgba(12,27,20,.12);
+  transform:translateX(101%);visibility:hidden;transition:transform .24s ease,visibility .24s}
+.hidden-drawer.open{transform:none;visibility:visible}
+.hidden-drawer-head{display:flex;justify-content:space-between;align-items:center;padding:26px 26px 20px;border-bottom:1px solid var(--divider);flex:none}
+.hidden-drawer-head h2{font:600 23px/1.35 var(--serif);margin:4px 0 0}
+.hidden-drawer-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:18px 26px 26px}
+.hidden-drawer-count{font-size:13px!important;color:var(--t1)!important;margin:0 0 7px!important}
+.hidden-drawer-count b{font-weight:650;color:var(--brand-1)}
+.hidden-drawer .hidden-note{font-size:12px!important;line-height:1.75!important;color:var(--t3)!important;margin:0 0 20px!important}
+.hidden-drawer .hidden-list{margin:7px 0 22px}
+.hidden-drawer .hidden-row{padding:12px 0}
+.hidden-drawer .hidden-section-row{padding:12px 0}
+.hidden-drawer-foot{flex:none;padding:14px 26px 18px;border-top:1px solid var(--divider);display:flex;gap:12px;align-items:center;justify-content:flex-end}
+.hidden-drawer-foot .restore-all{margin:0 auto 0 0;border:0;padding:8px 4px;font-size:12px}
+.hidden-done{padding:9px 18px;min-height:40px;border-radius:6px;color:var(--bg-elv);background:var(--brand-1);font-size:13px;font-weight:600}
+.hidden-done:hover{background:var(--brand-2)}
+/* 原生 hidden 必须压过 .sec-link 的 display:flex，隐藏目录不保留空隙 */
+#f-sec>.sec-link[hidden],#f-sec>.toc-sub[hidden]{display:none!important}
+@media(max-width:590px){.hidden-drawer-head{padding:22px 20px 17px}.hidden-drawer-body{padding:18px 20px}.hidden-drawer-foot{padding:14px 20px}}
+@media(prefers-reduced-motion:reduce){.hidden-drawer{transition:none}}
+
 </style>
 
 <!-- ga:start 这两行注释是离线构建的剥离标记（tools/offline/build.mjs），别删 -->
@@ -772,6 +797,25 @@ body.person-ready .personal-card-menu{display:block}
   </div>
 </aside>
 
+<div class="hidden-backdrop" id="hidden-backdrop" hidden></div>
+<aside class="hidden-drawer" id="hidden-manage" role="dialog" aria-modal="true" aria-labelledby="hidden-title" aria-hidden="true" inert>
+  <div class="hidden-drawer-head">
+    <div><div class="filter-eyebrow">阅读整理</div><h2 id="hidden-title">已隐藏内容</h2></div>
+    <button class="filter-close" id="hidden-close" type="button" aria-label="关闭已隐藏内容"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="hidden-drawer-body">
+    <p class="hidden-drawer-count">已隐藏 <b id="hidden-chapter-count">0</b> 章 · <b id="hidden-count">0</b> 条</p>
+    <p class="hidden-note">整章隐藏和逐条隐藏分别保存。恢复整章不会恢复其中原先单独隐藏的条目。</p>
+    <p class="hidden-warning" id="hidden-storage-warning" role="status" hidden>浏览器无法读取或保存隐藏记录。请允许此网站使用本地存储，否则关闭页面后隐藏状态可能丢失。</p>
+    <div class="hidden-list" id="hidden-section-list"></div>
+    <div class="hidden-list" id="hidden-list"></div>
+  </div>
+  <div class="hidden-drawer-foot">
+    <button class="restore-all" id="restore-all" type="button" hidden>恢复全部隐藏内容</button>
+    <button class="hidden-done" id="hidden-done" type="button">返回阅读</button>
+  </div>
+</aside>
+
 <main class="content">
   <div class="doc">
     <div class="doc-head">
@@ -789,16 +833,7 @@ body.person-ready .personal-card-menu{display:block}
       <p class="personal-mode-note" id="personal-mode-note" hidden></p>
       <div class="stat" aria-live="polite"><span>正在显示 <b id="cnt">–</b> 条</span><span class="stat-sep">·</span><span>共收录 <span id="tot">–</span> 条</span></div>
       <div class="active-filters" id="active-filters" aria-label="已启用的筛选条件" hidden></div>
-      <details class="hidden-manage" id="hidden-manage">
-        <summary>已隐藏 <span id="hidden-chapter-count">0</span> 章 · <span id="hidden-count">0</span> 条 · 可恢复</summary>
-        <div class="hidden-panel">
-          <p class="hidden-note">隐藏记录只保存在当前浏览器。清除网站数据可能使记录丢失；清空筛选不会恢复隐藏的条目。</p>
-          <p class="hidden-warning" id="hidden-storage-warning" role="status" hidden>浏览器无法读取或保存隐藏记录。请允许此网站使用本地存储，否则关闭页面后隐藏状态可能丢失。</p>
-          <div class="hidden-list" id="hidden-section-list"></div>
-          <div class="hidden-list" id="hidden-list"></div>
-          <button class="restore-all" id="restore-all" type="button" hidden>恢复所有隐藏（含章节）</button>
-        </div>
-      </details>
+      
       <details class="recent-updates" id="recent-updates" hidden>
         <summary>最近新增 <span id="recent-count">0</span> 条 <span class="recent-arrow" aria-hidden="true">⌄</span></summary>
         <div class="recent-body">
