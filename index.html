@@ -629,6 +629,50 @@ body.person-ready .personal-card-menu{display:block}
 }
 @media(prefers-reduced-motion:reduce){.edition-difference>summary::before{transition:none}}
 
+
+/* 单一隐藏目录：章节行 → 条目行 → 内容预览，恢复按钮不触发展开 */
+.hidden-drawer .hidden-chapter-directory{margin:6px 0 24px}
+.hidden-chapter-group{border-top:1px solid var(--divider)}
+.hidden-chapter-group:last-child{border-bottom:1px solid var(--divider)}
+.hidden-chapter-header{display:flex;align-items:center;gap:10px;min-height:74px;padding:12px 0}
+.hidden-chapter-toggle{display:flex;align-items:center;gap:12px;flex:1;min-width:0;text-align:left;
+  border-radius:5px;padding:6px 2px;color:var(--t1)}
+.hidden-chapter-toggle:hover .hidden-chapter-label{color:var(--brand-1)}
+.hidden-chapter-arrow{flex:none;display:block;width:8px;height:8px;border-right:1.5px solid var(--t3);
+  border-bottom:1.5px solid var(--t3);transform:rotate(-45deg);transition:transform .18s}
+.hidden-chapter-toggle[aria-expanded="true"] .hidden-chapter-arrow{transform:rotate(45deg)}
+.hidden-chapter-title{display:flex;flex-direction:column;gap:3px;min-width:0}
+.hidden-chapter-label{font-size:13.5px;font-weight:600;line-height:1.6;overflow-wrap:anywhere}
+.hidden-chapter-meta{font-size:11.5px;font-weight:400;color:var(--t3);line-height:1.5}
+.hidden-chapter-header .restore-section{flex:none;border:1px solid var(--divider);border-radius:6px;
+  padding:6px 9px;font-size:12px;color:var(--t2);max-width:110px;line-height:1.4}
+.hidden-chapter-header .restore-section:hover{border-color:var(--brand-1);color:var(--brand-1)}
+.hidden-chapter-items{margin:0 0 15px 20px;padding-left:13px;border-left:1px solid var(--divider)}
+.hidden-chapter-items[hidden]{display:none}
+.hidden-entry-row{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider)}
+.hidden-entry-row:last-child{border-bottom:0}
+.hidden-entry-detail{flex:1;min-width:0}
+.hidden-entry-detail summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:10px;
+  font-size:12.7px;line-height:1.65;color:var(--t2)}
+.hidden-entry-detail summary::-webkit-details-marker{display:none}
+.hidden-entry-detail summary:hover,.hidden-entry-detail[open] summary{color:var(--brand-1)}
+.hidden-entry-order{flex:none;min-width:16px;color:var(--t3);font-size:11.5px}
+.hidden-entry-title{flex:1;min-width:0;overflow-wrap:anywhere}
+.hidden-entry-own-flag{flex:none;font-size:10px;white-space:nowrap;color:var(--t3);border:1px solid var(--divider);
+  border-radius:4px;padding:0 4px}
+.hidden-entry-preview{padding:9px 0 2px 26px;color:var(--t2);font-size:12px;line-height:1.85;overflow-wrap:anywhere}
+.hidden-entry-preview p{font-size:12px;line-height:1.85;margin:0 0 10px;white-space:pre-wrap}
+.hidden-entry-preview strong{font-weight:650;color:var(--t1)}
+.hidden-entry-row>.restore-item{flex:none;padding:5px 8px;font-size:11.5px;line-height:1.4;min-height:28px;
+  max-width:105px;white-space:normal}
+@media(max-width:590px){
+ .hidden-chapter-header{gap:6px}.hidden-chapter-toggle{gap:9px}.hidden-chapter-label{font-size:13px}
+ .hidden-chapter-header .restore-section{padding:6px 8px;font-size:11.5px}
+ .hidden-chapter-items{margin-left:12px;padding-left:10px}
+ .hidden-entry-row{gap:7px}.hidden-entry-row>.restore-item{padding:5px 6px}
+}
+@media(prefers-reduced-motion:reduce){.hidden-chapter-arrow{transition:none}}
+
 </style>
 
 <!-- ga:start 这两行注释是离线构建的剥离标记（tools/offline/build.mjs），别删 -->
@@ -837,10 +881,9 @@ body.person-ready .personal-card-menu{display:block}
   </div>
   <div class="hidden-drawer-body">
     <p class="hidden-drawer-count">已隐藏 <b id="hidden-chapter-count">0</b> 章 · <b id="hidden-count">0</b> 条</p>
-    <p class="hidden-note">整章隐藏和逐条隐藏分别保存。恢复整章不会恢复其中原先单独隐藏的条目。</p>
+    <p class="hidden-note">按章节查看已隐藏的建议。点击章节展开目录，再点条目可预览内容。整章隐藏与单条隐藏分别保存，恢复整章不会影响原来单独隐藏的条目。</p>
     <p class="hidden-warning" id="hidden-storage-warning" role="status" hidden>浏览器无法读取或保存隐藏记录。请允许此网站使用本地存储，否则关闭页面后隐藏状态可能丢失。</p>
-    <div class="hidden-list" id="hidden-section-list"></div>
-    <div class="hidden-list" id="hidden-list"></div>
+    <div class="hidden-chapter-directory" id="hidden-section-list" aria-label="已隐藏章节目录"></div>
   </div>
   <div class="hidden-drawer-foot">
     <button class="restore-all" id="restore-all" type="button" hidden>恢复全部隐藏内容</button>
@@ -1392,57 +1435,120 @@ function saveHidden(){
   catch (err) { hiddenStorageWarning(); }
 }
 function renderHiddenPanel(){
-  const list = document.getElementById('hidden-list');
-  const fragment = document.createDocumentFragment();
-  const saved = CARDS.filter(card => HIDDEN.has(card.hiddenKey));
-  for (const card of saved){
-    const row = document.createElement('div'); row.className = 'hidden-row';
-    const text = document.createElement('div'); text.className = 'hidden-row-text';
-    const meta = document.createElement('span'); meta.className = 'hidden-row-meta';
-    meta.textContent = '第 ' + card.e.sec + ' 节 · 第 ' + card.e.n + ' 条';
-    const title = document.createElement('strong'); title.className = 'hidden-row-title'; title.textContent = card.e.title;
-    text.append(meta, title);
-    const button = document.createElement('button'); button.type = 'button'; button.className = 'restore-item';
-    button.textContent = '恢复'; button.dataset.key = card.hiddenKey;
-    button.setAttribute('aria-label', '恢复：' + card.e.title);
-    row.append(text, button); fragment.appendChild(row);
+  const list=document.getElementById('hidden-section-list');
+  // 恢复单条时保留正在浏览的章节/条目展开状态，不让抽屉跳回顶部。
+  const openSecs=new Set([...list.querySelectorAll('.hidden-chapter-toggle[aria-expanded="true"]')]
+    .map(button=>button.dataset.sec));
+  const openEntries=new Set([...list.querySelectorAll('.hidden-entry-detail[open]')]
+    .map(details=>details.dataset.key));
+  const byChapter=new Map();
+  const individuallyHidden=[];
+  for(const card of CARDS){
+    const sec=String(card.e.sec);
+    const ownHidden=HIDDEN.has(card.hiddenKey),wholeHidden=HIDDEN_SECTIONS.has(sec);
+    if(ownHidden)individuallyHidden.push(card);
+    if(!ownHidden&&!wholeHidden)continue;
+    if(!byChapter.has(sec))byChapter.set(sec,[]);
+    byChapter.get(sec).push(card);
   }
-  if (!saved.length){
-    const empty = document.createElement('p'); empty.className = 'hidden-empty';
-    empty.textContent = '暂无隐藏的条目。'; fragment.appendChild(empty);
+  const fragment=document.createDocumentFragment();
+  for(const sec of [...new Set([...HIDDEN_SECTIONS,...byChapter.keys()])]
+      .sort((a,b)=>Number(a)-Number(b))){
+    const record=SECS.get(sec);
+    const entries=byChapter.get(sec)||[];
+    const wholeHidden=HIDDEN_SECTIONS.has(sec);
+    const ownCount=entries.filter(card=>HIDDEN.has(card.hiddenKey)).length;
+    const group=document.createElement('section');group.className='hidden-chapter-group';
+    const header=document.createElement('div');header.className='hidden-chapter-header';
+    const toggle=document.createElement('button');toggle.type='button';
+    toggle.className='hidden-chapter-toggle';toggle.dataset.sec=sec;
+    toggle.setAttribute('aria-controls','hidden-chapter-items-'+sec);
+    toggle.setAttribute('aria-expanded',String(openSecs.has(sec)));
+    const arrow=document.createElement('span');arrow.className='hidden-chapter-arrow';arrow.setAttribute('aria-hidden','true');
+    const label=document.createElement('span');label.className='hidden-chapter-label';
+    label.textContent=record?sec+'. '+record.title:'第 '+sec+' 章（已从原文移除）';
+    const meta=document.createElement('small');meta.className='hidden-chapter-meta';
+    meta.textContent=wholeHidden?
+      '整章隐藏 · '+entries.length+' 条'+(ownCount?' · '+ownCount+' 条另行隐藏':''):
+      ownCount+' 条单独隐藏';
+    const titleGroup=document.createElement('span');titleGroup.className='hidden-chapter-title';
+    titleGroup.append(label,meta);toggle.append(arrow,titleGroup);
+    header.appendChild(toggle);
+    const restore=document.createElement('button');restore.type='button';
+    restore.className='restore-section';
+    restore.dataset.sec=sec;
+    restore.dataset.restoreScope=wholeHidden?'chapter':'items';
+    restore.textContent=wholeHidden?'恢复整章':'恢复本章条目';
+    restore.setAttribute('aria-label',restore.textContent+'：'+label.textContent);
+    header.appendChild(restore);
+    const items=document.createElement('div');items.className='hidden-chapter-items';
+    items.id='hidden-chapter-items-'+sec;
+    items.hidden=!openSecs.has(sec);
+    for(const card of entries){
+      const row=document.createElement('div');row.className='hidden-entry-row';
+      const detail=document.createElement('details');detail.className='hidden-entry-detail';
+      detail.dataset.key=card.hiddenKey;detail.open=openEntries.has(card.hiddenKey);
+      const summary=document.createElement('summary');
+      const order=document.createElement('span');order.className='hidden-entry-order';
+      order.textContent=card.e.n;
+      const title=document.createElement('span');title.className='hidden-entry-title';
+      title.textContent=card.e.title;
+      summary.append(order,title);
+      if(wholeHidden && HIDDEN.has(card.hiddenKey)){
+        const flag=document.createElement('span');flag.className='hidden-entry-own-flag';
+        flag.textContent='另行隐藏';summary.appendChild(flag);
+      }
+      detail.appendChild(summary);
+      const preview=document.createElement('div');preview.className='hidden-entry-preview';
+      for(const [key,content] of [
+        ['说人话',card.e.human],['成本',card.e.cost],['收益',card.e.gain],
+        ['备注',card.e.note],['来源',card.e.src]
+      ]){
+        if(!content)continue;
+        const p=document.createElement('p');
+        const heading=document.createElement('strong');heading.textContent=key+' · ';
+        p.appendChild(heading);
+        p.appendChild(document.createTextNode(content));
+        preview.appendChild(p);
+      }
+      detail.appendChild(preview);
+      row.appendChild(detail);
+      if(HIDDEN.has(card.hiddenKey)){
+        const btn=document.createElement('button');btn.type='button';
+        btn.className='restore-item';btn.dataset.key=card.hiddenKey;
+        btn.textContent=wholeHidden?'取消单条隐藏':'恢复';
+        btn.setAttribute('aria-label','恢复单条：'+card.e.title);
+        row.appendChild(btn);
+      }
+      items.appendChild(row);
+    }
+    if(!entries.length){
+      const empty=document.createElement('p');empty.className='hidden-empty';
+      empty.textContent='这一章在最新正文中没有对应条目，可恢复章节或查看原项目更新。';
+      items.appendChild(empty);
+    }
+    group.append(header,items);fragment.appendChild(group);
+  }
+  if(!byChapter.size&&!HIDDEN_SECTIONS.size){
+    const empty=document.createElement('p');empty.className='hidden-empty';
+    empty.textContent='目前没有已隐藏的章节或条目。';fragment.appendChild(empty);
   }
   list.replaceChildren(fragment);
-  const chapterList=document.getElementById('hidden-section-list');
-  const sectionRows=document.createDocumentFragment();
-  if(HIDDEN_SECTIONS.size){
-    const heading=document.createElement('h3');heading.className='hidden-section-heading';
-    heading.textContent='整章隐藏';sectionRows.appendChild(heading);
-  }
-  for(const sec of [...HIDDEN_SECTIONS].sort((a,b)=>Number(a)-Number(b))){
-    const record=SECS.get(sec);
-    const row=document.createElement('div');row.className='hidden-section-row';
-    const label=document.createElement('span');label.className='hidden-section-label';
-    label.textContent=record ? sec+'. '+record.title : '第 '+sec+' 章（原章节已调整）';
-    const btn=document.createElement('button');btn.className='restore-section';btn.type='button';
-    btn.dataset.sec=sec;btn.textContent='恢复本章';
-    btn.setAttribute('aria-label','恢复第 '+sec+' 章');
-    row.append(label,btn);sectionRows.appendChild(row);
-  }
-  chapterList.replaceChildren(sectionRows);
   document.getElementById('hidden-chapter-count').textContent=HIDDEN_SECTIONS.size;
-  document.querySelectorAll('#f-sec>.sec-link[data-v]').forEach(b=>{
-    if(!b.dataset.v)return; // 保留「全部章节」
-    const hidden=HIDDEN_SECTIONS.has(b.dataset.v);
-    b.hidden=hidden;
-    const sub=TOC_SEC.get(b.dataset.v);
+  document.querySelectorAll('#f-sec>.sec-link[data-v]').forEach(button=>{
+    if(!button.dataset.v)return; // 保留「全部章节」
+    const hidden=HIDDEN_SECTIONS.has(button.dataset.v);
+    button.hidden=hidden;
+    const sub=TOC_SEC.get(button.dataset.v);
     if(sub&&hidden)sub.hidden=true;
   });
-  document.getElementById('hidden-count').textContent = saved.length;
-  const count = document.getElementById('hidden-nav-count');
-  const total = saved.length+HIDDEN_SECTIONS.size;
-  count.textContent = total>99?'99+':String(total);
-  count.hidden = total === 0;
-  document.getElementById('hidden-nav').setAttribute('aria-label','管理隐藏内容：'+HIDDEN_SECTIONS.size+' 章、'+saved.length+' 条');
+  document.getElementById('hidden-count').textContent=individuallyHidden.length;
+  const count=document.getElementById('hidden-nav-count');
+  const total=individuallyHidden.length+HIDDEN_SECTIONS.size;
+  count.textContent=total>99?'99+':String(total);
+  count.hidden=total===0;
+  document.getElementById('hidden-nav').setAttribute('aria-label',
+    '管理隐藏内容：'+HIDDEN_SECTIONS.size+' 章、'+individuallyHidden.length+' 条');
   document.getElementById('restore-all').hidden=total===0;
 }
 
@@ -2079,11 +2185,7 @@ function wire(){
       history.replaceState(history.state, '', location.pathname + location.search);
     apply(); spy();
   });
-  document.getElementById('hidden-list').addEventListener('click', ev => {
-    const button = ev.target.closest?.('.restore-item'); if (!button) return;
-    const card = CARDS.find(item => item.hiddenKey === button.dataset.key);
-    if (card) restoreHidden(card);
-  });
+
   document.getElementById('recent-list').addEventListener('click',ev=>{
     const button=ev.target.closest?.('button[data-new-key]');if(!button)return;
     const card=CARDS.find(item=>item.hiddenKey===button.dataset.newKey);
@@ -2091,8 +2193,30 @@ function wire(){
     gotoItem(card.e.sec+'-'+card.e.n,spyLast);
   });
   document.getElementById('hidden-section-list').addEventListener('click',ev=>{
-    const button=ev.target.closest?.('.restore-section');if(!button)return;
-    HIDDEN_SECTIONS.delete(button.dataset.sec);saveHiddenSections();renderHiddenPanel();apply();
+    const toggle=ev.target.closest?.('.hidden-chapter-toggle');
+    if(toggle){
+      const isOpen=toggle.getAttribute('aria-expanded')==='true';
+      toggle.setAttribute('aria-expanded',String(!isOpen));
+      document.getElementById('hidden-chapter-items-'+toggle.dataset.sec).hidden=isOpen;
+      return;
+    }
+    const itemButton=ev.target.closest?.('.restore-item');
+    if(itemButton){
+      const card=CARDS.find(item=>item.hiddenKey===itemButton.dataset.key);
+      if(card)restoreHidden(card);
+      return;
+    }
+    const sectionButton=ev.target.closest?.('.restore-section');
+    if(!sectionButton)return;
+    const sec=sectionButton.dataset.sec;
+    if(sectionButton.dataset.restoreScope==='chapter'){
+      HIDDEN_SECTIONS.delete(sec);saveHiddenSections();
+    }else{
+      let changed=false;
+      for(const card of CARDS)if(String(card.e.sec)===sec)changed=HIDDEN.delete(card.hiddenKey)||changed;
+      if(changed)saveHidden();
+    }
+    renderHiddenPanel();apply();
   });
   document.getElementById('restore-all').addEventListener('click', () => {
     if ((!HIDDEN.size && !HIDDEN_SECTIONS.size) || !confirm('恢复全部隐藏的章节和条目？')) return;
