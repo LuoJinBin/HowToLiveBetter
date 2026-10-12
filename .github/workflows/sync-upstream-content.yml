@@ -10,6 +10,8 @@ on:
       - .github/workflows/sync-upstream-content.yml
       - tools/sync-upstream-content.mjs
       - tools/check-site.mjs
+      - tools/check-ui-features.mjs
+      - tools/lib/entry-changes.mjs
 
 permissions:
   contents: write
@@ -38,13 +40,14 @@ jobs:
           node tools/sync-upstream-content.mjs "$RUNNER_TEMP/howtolivebetter-upstream"
           node tools/check-site.mjs
           node tools/check-personal.mjs
+          node tools/check-ui-features.mjs
 
       - name: Commit changed data only
         shell: bash
         run: |
-          git add -A -- book/ docs/ README.md LICENSE-CONTENT
+          git add -A -- book/ docs/ README.md LICENSE-CONTENT data/new-entries.json
           if git diff --cached --quiet; then
-            echo "正文、目录和许可未变化，不创建空提交"
+            echo "正文、目录、许可和新增记录未变化，不创建空提交"
             exit 0
           fi
           git add UPSTREAM_SOURCE.md
