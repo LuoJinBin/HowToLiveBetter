@@ -26,6 +26,18 @@ for (const f of sourceBook) {
   need(/^# \d+\. /m.test(text) && /^### \d+\. /m.test(text), '章节格式不兼容：' + f);
 }
 need(existsSync(join(SRC, 'docs')), '上游 docs/ 目录不存在');
+need(existsSync(join(SRC, 'updates.json')), '上游更新记录 updates.json 缺失');
+let sourceUpdates;
+try { sourceUpdates = JSON.parse(upstream('updates.json')); } catch { throw new Error('同步已中止：上游 updates.json 不是有效 JSON'); }
+need(typeof sourceUpdates.since === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(sourceUpdates.since) &&
+  sourceUpdates.items && typeof sourceUpdates.items === 'object' && !Array.isArray(sourceUpdates.items),
+  '上游更新记录结构异常');
+for (const [key, row] of Object.entries(sourceUpdates.items)) {
+  need(/^\d{1,3}-\d{1,3}$/.test(key) && row && typeof row === 'object' &&
+    (row.added === undefined || /^\d{4}-\d{2}-\d{2}$/.test(row.added)) &&
+    (row.changed === undefined || /^\d{4}-\d{2}-\d{2}$/.test(row.changed)) &&
+    (row.added || row.changed), '上游更新记录条目格式异常：' + key);
+}
 
 // 只替换本地 README 的数据片段，保留自己的介绍、网站链接和去广告修改。
 function replaceSection(local, source, name) {
@@ -99,14 +111,15 @@ cpSync(join(SRC, 'docs'), join(ROOT, 'docs'), { recursive: true });
 writeFileSync(join(ROOT, 'README.md'), readme);
 writeFileSync(join(ROOT, 'LICENSE-CONTENT'), license);
 writeFileSync(join(ROOT, 'data/new-entries.json'), JSON.stringify({version:1,entries:newEntries.entries},null,2)+'\n');
+writeFileSync(join(ROOT, 'data/entry-updates.json'), JSON.stringify(sourceUpdates,null,2)+'\n');
 const sha = execFileSync('git', ['-C', SRC, 'rev-parse', 'HEAD'], {encoding:'utf8'}).trim();
 need(/^[a-f0-9]{40}$/.test(sha), '无法读取上游 Git 提交编号');
 const metadata = '# 正文同步来源\n\n'
   + '- 来源：[eternity4719/HowToLiveBetter](https://github.com/eternity4719/HowToLiveBetter)\n'
   + '- 上游提交：[' + sha + '](https://github.com/eternity4719/HowToLiveBetter/commit/' + sha + ')\n'
   + '- 最后同步检查：' + new Date().toISOString() + '\n'
-  + '- 范围：book/、docs/、README.md 的章节目录、术语表、内容型表格和相关统计\n'
+  + '- 范围：book/、docs/、README.md 内容片段及 data/entry-updates.json（原项目新增/修订记录）\n'
   + '- 未同步：index.html、tools/、.github/ 中原项目的代码与样式、广告及赞赏内容\n'
   + '- 正文许可：[CC BY 4.0](LICENSE-CONTENT)\n';
 writeFileSync(join(ROOT, 'UPSTREAM_SOURCE.md'), metadata);
-console.log('同步检查通过：' + sourceBook.length + ' 节；正文 ' + sourceCount[1] + ' 条；本轮新增 ' + newEntries.discovered + ' 条；上游 ' + sha.slice(0, 12));
+console.log('同步检查通过：' + sourceBook.length + ' 节；正文 ' + sourceCount[1] + ' 条；本轮新增 ' + newEntries.discovered + ' 条；原项目新增/修订记录 ' + Object.keys(sourceUpdates.items).length + ' 条；上游 ' + sha.slice(0, 12));
