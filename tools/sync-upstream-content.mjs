@@ -82,7 +82,7 @@ need(/正文按节拆成 \d+ 个文件/.test(readme), 'README 章节数说明格
 readme = readme.replace(/正文按节拆成 \d+ 个文件/, '正文按节拆成 ' + sourceBook.length + ' 个文件');
 
 const credit = '\n## 内容来源与许可\n\n'
-  + '本项目是 [eternity4719《高性价比人生指南》原作](https://github.com/eternity4719/HowToLiveBetter) 的**非官方阅读增强版**。book/ 与 docs/ 正文和原始资料由原作者维护，依照 [CC BY 4.0](LICENSE-CONTENT) 署名使用。本站独立维护网页布局、筛选、个性化阅读、章节与单条隐藏恢复和同步记录；不合并原站新页面或脚本。约每 6 小时检查原作内容更新，具体版本见 [同步记录](UPSTREAM_SOURCE.md)；完整差异及未同步范围见 [增强版说明](EDITION.md)。\n\n';
+  + '本项目是 [eternity4719《高性价比人生指南》原作](https://github.com/eternity4719/HowToLiveBetter) 的**非官方阅读增强版**。book/ 与 docs/ 正文和原始资料由原作者维护，依照 [CC BY 4.0](LICENSE-CONTENT) 署名使用。本站独立维护网页布局、筛选、个性化阅读、章节与单条隐藏恢复、生活自查和 Anki/电子书构建；上游页面与脚本不会自动覆盖本站，兼容功能经审查后手动移植。约每 6 小时检查原作内容更新，具体版本见 [同步记录](UPSTREAM_SOURCE.md)；完整差异及未同步范围见 [增强版说明](EDITION.md)。\n\n';
 if (/^## 内容来源与许可$/m.test(readme)) {
   const start = readme.indexOf('## 内容来源与许可\n');
   const end = readme.indexOf('\n## ', start + 4);
@@ -119,7 +119,7 @@ const metadata = '# 正文同步来源\n\n'
   + '- 上游提交：[' + sha + '](https://github.com/eternity4719/HowToLiveBetter/commit/' + sha + ')\n'
   + '- 最后同步检查：' + new Date().toISOString() + '\n'
   + '- 范围：book/、docs/、README.md 内容片段及 data/entry-updates.json（原项目新增/修订记录）\n'
-  + '- 未同步：index.html、tools/、.github/ 中原项目的代码与样式、广告及赞赏内容\n'
+  + '- 未自动同步：原项目页面、样式、工具和工作流；本站选择性手动移植兼容功能，广告与赞赏内容明确排除\n'
   + '- 正文许可：[CC BY 4.0](LICENSE-CONTENT)\n';
 writeFileSync(join(ROOT, 'UPSTREAM_SOURCE.md'), metadata);
 console.log('同步检查通过：' + sourceBook.length + ' 节；正文 ' + sourceCount[1] + ' 条；本轮新增 ' + newEntries.discovered + ' 条；原项目新增/修订记录 ' + Object.keys(sourceUpdates.items).length + ' 条；上游 ' + sha.slice(0, 12));
