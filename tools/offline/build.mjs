@@ -48,6 +48,7 @@ must('href="selfcheck.html"', '生活自查入口');
 html = html
   .replaceAll('href="README.md"', `href="${REPO}/blob/main/README.md"`)
   .replaceAll('href="book/"', `href="${REPO}/tree/main/book"`)
+  .replaceAll('href="selfcheck.html"', `href="${SITE}selfcheck.html"`)
   .replaceAll('<a class="title" href="./"', `<a class="title" href="${SITE}"`);
 
 
