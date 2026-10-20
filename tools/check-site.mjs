@@ -10,12 +10,24 @@ const read = path => readFileSync(resolve(root, path), 'utf8');
 const assert = (ok, why) => { if (!ok) throw new Error('内容与站点检查失败：' + why); };
 const readme = read('README.md'), html = read('index.html');
 const edition=read('EDITION.md');
+const selfcheck=read('selfcheck.html');
+const updateData=JSON.parse(read('data/entry-updates.json'));
 assert(html.includes('阅读增强版') && html.includes('id="edition-difference"') &&
   readme.includes('# 高性价比人生指南 · 阅读增强版') &&
   /非官方/.test(edition) && /eternity4719/.test(edition),
   '增强版品牌、差异说明或原作者归属缺失');
 assert(!readme.includes('git clone https://github.com/eternity4719/HowToLiveBetter.git'),
   '部署增强版的仓库克隆命令仍指向原版');
+assert(selfcheck.includes('阅读增强版') && selfcheck.includes('selfcheck-v1') &&
+  selfcheck.includes('luojinbin.github.io/HowToLiveBetter/#e-') &&
+  !/ads\\/|mcyyy|赞赏|打赏/i.test(selfcheck),
+  '生活自查页的品牌、本站跳转或无广告约束异常');
+assert(typeof updateData.since==='string' && /^\\d{4}-\\d{2}-\\d{2}$/.test(updateData.since) &&
+  updateData.items && typeof updateData.items==='object' && Object.keys(updateData.items).length>100 &&
+  Object.entries(updateData.items).every(([key,row])=>/^\\d{1,3}-\\d{1,3}$/.test(key) && row &&
+    (row.added===undefined || /^\\d{4}-\\d{2}-\\d{2}$/.test(row.added)) &&
+    (row.changed===undefined || /^\\d{4}-\\d{2}-\\d{2}$/.test(row.changed)) && (row.added||row.changed)),
+  '原项目新增/修订记录格式异常');
 const news=JSON.parse(read('data/new-entries.json'));
 assert(news.version===1&&Array.isArray(news.entries),'新增数据清单无效');
 const files = readdirSync(resolve(root,'book')).filter(f => /^\d\d-.+\.md$/.test(f)).sort();
@@ -34,6 +46,10 @@ assert(badgeCount === entries, 'README 条目徽章数字未同步');
 assert(html.includes('id="f-sec"') && html.includes('id="q"') &&
   html.includes('id="hidden-nav"') && html.includes('howtolivebetter:hidden-items:v1'),
   '独立站搜索、筛选或隐藏功能缺失');
+assert(html.includes('href="selfcheck.html"') && html.includes('data-dim="upd"') &&
+  html.includes('data-dim="days"') && html.includes('function fitsUpd(') &&
+  html.includes('// <split-rules>') && html.includes('function renderGain('),
+  '生活自查、新增/修订筛选或长文分段功能缺失');
 assert(!/googletagmanager|google-analytics|G-NTPGXCLMP6/.test(html), '不应继续携带原作者统计代码');
 assert(!/mcyyy|## 广告位/.test(readme + html), '不应重新引入上游广告');
 assert(/CC BY 4\.0/.test(readme + html) && /eternity4719\/HowToLiveBetter/.test(readme + html),
