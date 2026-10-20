@@ -20,13 +20,13 @@ assert(!readme.includes('git clone https://github.com/eternity4719/HowToLiveBett
   '部署增强版的仓库克隆命令仍指向原版');
 assert(selfcheck.includes('阅读增强版') && selfcheck.includes('selfcheck-v1') &&
   selfcheck.includes('luojinbin.github.io/HowToLiveBetter/#e-') &&
-  !/ads\\/|mcyyy|赞赏|打赏/i.test(selfcheck),
+  !/ads\/|mcyyy|赞赏|打赏/i.test(selfcheck),
   '生活自查页的品牌、本站跳转或无广告约束异常');
-assert(typeof updateData.since==='string' && /^\\d{4}-\\d{2}-\\d{2}$/.test(updateData.since) &&
+assert(typeof updateData.since==='string' && /^\d{4}-\d{2}-\d{2}$/.test(updateData.since) &&
   updateData.items && typeof updateData.items==='object' && Object.keys(updateData.items).length>100 &&
-  Object.entries(updateData.items).every(([key,row])=>/^\\d{1,3}-\\d{1,3}$/.test(key) && row &&
-    (row.added===undefined || /^\\d{4}-\\d{2}-\\d{2}$/.test(row.added)) &&
-    (row.changed===undefined || /^\\d{4}-\\d{2}-\\d{2}$/.test(row.changed)) && (row.added||row.changed)),
+  Object.entries(updateData.items).every(([key,row])=>/^\d{1,3}-\d{1,3}$/.test(key) && row &&
+    (row.added===undefined || /^\d{4}-\d{2}-\d{2}$/.test(row.added)) &&
+    (row.changed===undefined || /^\d{4}-\d{2}-\d{2}$/.test(row.changed)) && (row.added||row.changed)),
   '原项目新增/修订记录格式异常');
 const news=JSON.parse(read('data/new-entries.json'));
 assert(news.version===1&&Array.isArray(news.entries),'新增数据清单无效');
