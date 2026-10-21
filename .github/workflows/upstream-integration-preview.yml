@@ -84,10 +84,13 @@ jobs:
               }
               ck(qs.querySelectorAll('button[data-k]').length>=10,'adaptive question list');
               let answered=0;
-              for(const b of [...qs.querySelectorAll('button[data-v="n"]')].slice(0,5)){
-                if(b.isConnected&&b.getAttribute('aria-pressed')==='false'){b.click();answered++;}
+              const questionKeys=[...new Set([...qs.querySelectorAll('button[data-v="n"]')]
+                .filter(b=>!b.dataset.k.startsWith('p:')).map(b=>b.dataset.k))].slice(0,5);
+              for(const k of questionKeys){
+                const b=[...qs.querySelectorAll('button[data-v="n"]')].find(b=>b.dataset.k===k);
+                if(b&&b.getAttribute('aria-pressed')==='false'){b.click();answered++;}
               }
-              ck(answered>=1,'answered one of the suggested actions');
+              ck(answered>=1,'answered at least one actual advice question');
               document.getElementById('go').click();
               ck(!document.getElementById('out').hidden,'can view results');
               ck(document.getElementById('todo').textContent.length>40,'result produces recommendations');
