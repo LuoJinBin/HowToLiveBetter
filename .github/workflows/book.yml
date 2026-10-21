@@ -1,6 +1,6 @@
 # 正文一改就重新生成四样，挂到固定的 Release「epub-latest」上，下载链接不变：
-#   EPUB        https://github.com/eternity4719/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.epub
-#   PDF         https://github.com/eternity4719/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.pdf
+#   EPUB        https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.epub
+#   PDF         https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.pdf
 #   离线单文件  https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.html
 #   Anki 牌组  https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.apkg
 # PR 只生成并校验，不发布，产物在 Actions 页面的 artifact 里。
