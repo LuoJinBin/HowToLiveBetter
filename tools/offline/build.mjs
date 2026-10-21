@@ -22,6 +22,7 @@ const corpus = {
   parts: Object.fromEntries(files.map(f => [f, read(f)])),
   docs: Object.fromEntries(docs.map(f => [f, read(f)])),
   recentEntries: JSON.parse(read('data/new-entries.json')),
+  updates: JSON.parse(read('data/entry-updates.json')),
 };
 // </script 会提前关掉脚本标签；\/ 在 JS 字符串里就是 /，内容不变
 const corpusJson = JSON.stringify(corpus).replace(/<\/script/gi, '<\\/script');
@@ -43,9 +44,11 @@ if (/googletagmanager|google-analytics/.test(html)) throw new Error('剥掉标�
 // 相对链接在本地打开时是死的，改成线上地址
 must('href="README.md"', ' README.md 链接');
 must('href="book/"', ' book/ 链接');
+must('href="selfcheck.html"', '生活自查入口');
 html = html
   .replaceAll('href="README.md"', `href="${REPO}/blob/main/README.md"`)
   .replaceAll('href="book/"', `href="${REPO}/tree/main/book"`)
+  .replaceAll('href="selfcheck.html"', `href="${SITE}selfcheck.html"`)
   .replaceAll('<a class="title" href="./"', `<a class="title" href="${SITE}"`);
 
 

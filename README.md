@@ -20,7 +20,7 @@
 [![原始文献](https://img.shields.io/badge/%E5%8E%9F%E5%A7%8B%E6%96%87%E7%8C%AE-2508%20%E6%9D%A1%E9%93%BE%E6%8E%A5-565a5f?style=flat-square)](docs/核实记录/)
 [![许可](https://img.shields.io/badge/%E6%AD%A3%E6%96%87-CC%20BY%204.0-565a5f?style=flat-square)](LICENSE-CONTENT)
 
-**[打开在线检索页](https://luojinbin.github.io/HowToLiveBetter/)** · [下载 PDF](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.pdf) · [下载 EPUB](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.epub) · [下载离线单文件（HTML）](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.html) · [与原版的区别](EDITION.md) · [目录](#目录) · [术语表](#读懂数字术语表) · [核实记录](docs/核实记录/) · [结婚划不划算（长文）](docs/结婚划不划算.md) · [家庭应急装备清单（长文）](docs/家庭应急装备清单.md) · [遇到陌生人出事该不该停（长文）](docs/遇到陌生人出事该不该停.md) · [做平台要办哪些证（长文）](docs/做平台要办哪些证.md) · [生物钟和夜班（长文）](docs/生物钟和夜班.md)
+**[打开在线检索页](https://luojinbin.github.io/HowToLiveBetter/)** · [下载 PDF](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.pdf) · [下载 EPUB](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.epub) · [下载离线单文件（HTML）](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.html) · [下载 Anki 牌组](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.apkg) · [生活自查](selfcheck.html) · [与原版的区别](EDITION.md) · [目录](#目录) · [术语表](#读懂数字术语表) · [核实记录](docs/核实记录/) · [结婚划不划算（长文）](docs/结婚划不划算.md) · [家庭应急装备清单（长文）](docs/家庭应急装备清单.md) · [遇到陌生人出事该不该停（长文）](docs/遇到陌生人出事该不该停.md) · [做平台要办哪些证（长文）](docs/做平台要办哪些证.md) · [生物钟和夜班（长文）](docs/生物钟和夜班.md)
 
 其他语言：[English](https://dlgrv.github.io/HowToLiveBetter/en/) · [Русский](https://dlgrv.github.io/HowToLiveBetter/ru/) · [Español](https://dlgrv.github.io/HowToLiveBetter/es/) —— 由 [dlgrv](https://github.com/dlgrv) 维护的非官方翻译（[仓库](https://github.com/dlgrv/HowToLiveBetter)），译文按翻译当时的中文正文做，之后新增和改动的条目不一定跟上，一切以本仓库的中文原文为准。
 
@@ -33,9 +33,9 @@
 本站不是复制了原作者的网页再改一个名字，而是独立维护的阅读方式：
 
 - **内容来自原版**：章节、建议、数字、证据、来源和原始排序，以 [原项目](https://github.com/eternity4719/HowToLiveBetter) 为基础。
-- **阅读方式由本站维护**：手机/桌面阅读布局、顶部筛选与章节定位、单条和整章隐藏及恢复、个人偏好模式、随便看看、最近新增。
-- **内容持续同步**：约每 6 小时检查原项目正文和资料变化。新增的网站工具或功能不会自动合并，原版的独立生活自查页目前需要前往原站使用。
-- **偏好由自己掌握**：默认完整显示，不强迫设置；隐藏和个性化存放在当前浏览器，可导入导出，没有云端账户。
+- **阅读方式由本站维护**：手机/桌面阅读布局、顶部筛选与章节定位、单条和整章隐藏及恢复、个人偏好模式、随便看看、新增/修订筛选、生活自查与长段落分段。
+- **内容持续同步**：约每 6 小时检查原项目正文、资料与新增/修订记录。上游网站代码不会自动覆盖本站；兼容功能经过审查后手动移植，广告和赞赏入口不迁移。
+- **偏好由自己掌握**：默认完整显示，不强迫设置；隐藏、个性化与自查答案存放在当前浏览器，可导入导出设置，没有云端账户。
 - **身份清楚**：这是非官方衍生阅读版；原文遵循 [CC BY 4.0](LICENSE-CONTENT)，关于阅读器的反馈发到本站，原文的问题仍以原项目为准。
 
 [查看完整差异、更新范围和许可说明](EDITION.md) · [原作者网站](https://eternity4719.github.io/HowToLiveBetter/)

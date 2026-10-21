@@ -17,6 +17,16 @@ for(const id of ['hidden-section-list','hidden-chapter-count','recent-updates','
   check(html.includes('id="'+id+'"'),'缺少元素 '+id);
 check(html.includes('data-hide-sec=')&&html.includes('class="hide-chapter"'),'缺少章节隐藏按钮');
 
+check(html.includes('href="selfcheck.html"') && html.includes('data-dim="upd"') &&
+  html.includes('data-dim="days"') && html.includes('function fitsUpd('),
+  '生活自查或新增/修订时间筛选未移植');
+check(html.includes('// <split-rules>') && html.includes('function renderGain(') &&
+  html.includes('renderGain(f.gain, e.gain, terms)') &&
+  html.includes('renderGain(f.note, e.note, terms)'),
+  '网页端长收益/备注分段规则缺失');
+check(html.includes('history.replaceState(history.state') &&
+  html.includes('state.dispute = false; state.todo = false;'),
+  '交叉引用跳转没有清理无效筛选或保留历史状态');
 check(html.includes('class="hidden-chapter-directory" id="hidden-section-list"') &&
   !html.includes('id="hidden-list"'), '隐藏列表未合并成单一章节目录');
 for(const className of ['hidden-chapter-toggle','hidden-chapter-items','hidden-entry-detail','hidden-entry-preview'])
@@ -81,4 +91,7 @@ helper.HIDDEN.clear();helper.HIDDEN_SECTIONS.clear();helper.readHidden();helper.
 check(helper.HIDDEN.size===1&&helper.HIDDEN_SECTIONS.has('12'),'两类隐藏无法独立恢复');
 const dataset=JSON.parse(readFileSync(resolve(root,'data/new-entries.json'),'utf8'));
 check(dataset.version===1&&Array.isArray(dataset.entries),'缺少站点追踪数据');
+const updateData=JSON.parse(readFileSync(resolve(root,'data/entry-updates.json'),'utf8'));
+check(typeof updateData.since==='string'&&Object.keys(updateData.items||{}).length>100,
+  '缺少原项目新增/修订历史');
 console.log('章节隐藏与新增历史检查通过：独立持久化、默认不隐藏、30 天记录、站点图标与脚本有效');

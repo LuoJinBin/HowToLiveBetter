@@ -673,6 +673,20 @@ body.person-ready .personal-card-menu{display:block}
 }
 @media(prefers-reduced-motion:reduce){.hidden-chapter-arrow{transition:none}}
 
+
+/* 与 EPUB/PDF 使用同一拆分规则：长收益、备注按新依据分段 */
+.rows .v ul.chunks{margin:0;padding:0;list-style:none}
+.rows .v ul.chunks li{position:relative;padding-left:14px;margin-bottom:6px}
+.rows .v ul.chunks li:last-child{margin-bottom:0}
+.rows .v ul.chunks li::before{content:"";position:absolute;left:2px;top:.75em;width:4px;height:4px;border-radius:50%;background:var(--t3)}
+.selfcheck-entry{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:8px 0 20px;font-size:12.5px}
+.selfcheck-entry a{font-weight:600;color:var(--brand-1);text-decoration:none}
+.selfcheck-entry a:hover{text-decoration:underline}
+.selfcheck-entry span{color:var(--t3)}
+.recent-kind{flex:none;align-self:center;font-size:10px;line-height:1.6;padding:1px 5px;border:1px solid var(--divider);border-radius:4px;color:var(--t3)}
+.recent-kind.is-new{color:var(--brand-1);border-color:var(--brand-3)}
+.recent-kind.is-changed{color:var(--t2)}
+
 </style>
 
 <!-- ga:start 这两行注释是离线构建的剥离标记（tools/offline/build.mjs），别删 -->
@@ -801,6 +815,17 @@ body.person-ready .personal-card-menu{display:block}
     </div>
   </div>
   <div class="group">
+    <div class="gt">最近更新 <small>按原项目的正文记录</small></div>
+    <div class="chips" data-dim="upd">
+      <button class="chip" data-v="新增" aria-pressed="false">新增的</button>
+      <button class="chip" data-v="改过" aria-pressed="false">修订过</button>
+    </div>
+    <div class="chips" data-dim="days">
+      <button class="chip" data-v="7" aria-pressed="false">7 天内</button>
+      <button class="chip" data-v="30" aria-pressed="false">30 天内</button>
+    </div>
+  </div>
+  <div class="group">
     <label class="toggle"><input type="checkbox" id="f-dispute"> 只看标了争议的</label>
     <label class="toggle"><input type="checkbox" id="f-todo"> 只看有待核实的</label>
   </div>
@@ -899,6 +924,7 @@ body.person-ready .personal-card-menu{display:block}
       <p class="lead">每一条都回答两个问题：花掉什么，换回什么。</p>
       <p class="howto">换回的算在谁头上也分档：你自己最高，其次配偶和直系亲属，再次朋友同事，陌生人最低——最低不等于零，只是回报的指望小、要连风险一起看。</p>
       <p class="howto">不用全做：这是一份按性价比排好的备选单，不是任务清单。挑走一两条就算数，剩下的需要时再回来查——想挑省力的，左边把「花钱」选「不花钱」、「要毅力」选「不用」，剩下的就是。作者自己也没做到其中大部分。正文里带虚线的「第 X 条」可以点开，就地看那条写了什么，不用自己翻过去。</p>
+      <p class="selfcheck-entry"><a href="selfcheck.html">生活自查 ↗</a><span>回答几道题，找出还没做的建议；结果可以复制成行动清单</span></p>
       <div class="personal-mode-switch" id="personal-mode-switch" hidden>
         <div class="personal-modes" role="group" aria-label="阅读模式">
           <button type="button" data-person-mode="all" aria-pressed="true">全部内容</button>
@@ -918,16 +944,16 @@ body.person-ready .personal-card-menu{display:block}
             <li><strong>只看适合自己的：</strong>可选年龄、身体相关偏好与生活状态，「全部内容」随时切回。</li>
             <li><strong>只留想看的：</strong>支持隐藏整章与单条、单条临时略过，并在独立面板中恢复。</li>
             <li><strong>找起来更方便：</strong>章节定位、集中筛选、阅读导航、深色模式和手机适配。</li>
-            <li><strong>不怕错过更新：</strong>约每 6 小时检查正文变化，单独记录最近检测到的新增条目。</li>
+            <li><strong>不怕错过更新：</strong>约每 6 小时同步正文，支持按原项目记录筛选新增与修订，也能查看最近变化。</li>
             <li><strong>偏好自己保管：</strong>本地保存，支持导入导出，无账号；PDF、EPUB 和离线 HTML 可下载。</li>
           </ul>
-          <p class="edition-caveat">这是非官方衍生阅读版，并非原站镜像。上游新增的网站功能不会自动合并；原版的独立生活自查页请前往原站使用。正文按 <a href="LICENSE-CONTENT">CC BY 4.0</a> 署名。<a href="EDITION.md">查看完整差异与来源说明 ↗</a></p>
+          <p class="edition-caveat">这是非官方衍生阅读版，并非原站镜像。上游新增的网站工具不会自动合并；本站已独立移植生活自查页，答案保存在当前浏览器。正文按 <a href="LICENSE-CONTENT">CC BY 4.0</a> 署名。<a href="EDITION.md">查看完整差异与来源说明 ↗</a></p>
         </div>
       </details>
       <details class="recent-updates" id="recent-updates" hidden>
-        <summary>最近新增 <span id="recent-count">0</span> 条 <span class="recent-arrow" aria-hidden="true">⌄</span></summary>
+        <summary>最近新增与修订 <span id="recent-count">0</span> 条 <span class="recent-arrow" aria-hidden="true">⌄</span></summary>
         <div class="recent-body">
-          <p>以下是本站从上游同步时检测到的新增建议（近 30 天）；日期是同步发现时间，不代表原文最初发表时间。</p>
+          <p>以下优先采用原项目记录的新增与实质修订（近 30 天），并显示修订栏位。日期是版本记录，不代表信息有效期；缺少上游记录时才回退到本站发现时间。</p>
           <div id="recent-list"></div>
         </div>
       </details>
@@ -1153,6 +1179,49 @@ function renderText(el, text, terms, withTerms = true, urlsLast = false){
 }
 // 来源栏是「；」串起来的若干条文献，拆成带序号的列表，一条一行
 // 括号和引号里的分号不算分隔符：法条原文里有「……代理或者追认；……」，条款注里有「第五项，修改刑法第三百九十条；自 2024 年 3 月 1 日起施行」
+// <split-rules> 这一段和 tools/lib/split-items.mjs 是同一套规则，EPUB、PDF 用那份，网页和离线版用这份。
+// 改一边要同步改另一边，`node tools/check-split.mjs` 会拿全书逐条比对两边拆出来的结果。
+// 收益、备注超过 300 字的，在句号处、且下一句开始引用新的依据时拆成几块，一块一行
+const GAIN_MIN_LEN = 300, GAIN_MIN_CHUNK = 25;
+const GAIN_TOPIC_START = [
+  /^[^，。「」《》：；（）的]{1,12}看(《|[^，。「」的]{0,10}法[：「（第])/,
+  /^《[^》]{2,40}》/,
+  /^(?!该|本|此|这|同|上述|但|而|所以|因此|并且|也)[一-龥]{1,12}法(第[一二三四五六七八九十百零]+条|「)/,
+  /^(另一|另有一|还有一|再一|又一)(项|篇)/,
+  /^(国内|国外|国内外)也有/,
+  /^案例[一二三四五六七八九十]/,
+  /^(同一天|同一试验|同一指南|同一研究)/,
+  /^(美国|英国|欧洲|世界卫生组织|WHO|中国)[^，。]{0,20}(指南|共识|建议|学会)/,
+  /^(先说|再说|最后说|先看|再看|最后看)/,
+  /^一(项|篇)[^，。]{0,20}(试验|研究|综述|分析|调查)/,
+  /^(芬兰|北欧|英国|美国|日本|韩国|瑞典|丹麦|挪威|德国|法国|澳大利亚|加拿大|荷兰|台湾|香港|上海|北京)[^，。]{0,25}(研究|数据库|试验|队列|调查)/,
+];
+function splitGain(text){
+  if (!text || text.length < GAIN_MIN_LEN) return [text];
+  const sentences = []; let buf = '', depth = 0;
+  for (const c of text){
+    if ('「『《（'.includes(c)) depth++;
+    else if ('」』》）'.includes(c)) depth = Math.max(0, depth - 1);
+    buf += c;
+    if (c === '。' && depth === 0){ sentences.push(buf); buf = ''; }
+  }
+  if (buf) sentences.push(buf);
+  const chunks = [];
+  for (const s of sentences){
+    if (chunks.length && GAIN_TOPIC_START.some(re => re.test(s))) chunks.push(s);
+    else if (chunks.length) chunks[chunks.length - 1] += s;
+    else chunks.push(s);
+  }
+  const out = [];
+  for (const c of chunks){
+    if (out.length && c.length < GAIN_MIN_CHUNK) out[out.length - 1] += c;
+    else out.push(c);
+  }
+  if (out.length > 1 && out[0].length < GAIN_MIN_CHUNK) out.splice(0, 2, out[0] + out[1]);
+  return out;
+}
+// 来源栏是「；」串起来的若干条文献，拆成带序号的列表，一条一行
+// 括号和引号里的分号不算分隔符：法条原文里有「……代理或者追认；……」，条款注里有「第五项，修改刑法第三百九十条；自 2024 年 3 月 1 日起施行」
 const SRC_OPEN = '「『（', SRC_CLOSE = '」』）';
 function splitSrc(text){
   const parts = []; let buf = '', depth = 0;
@@ -1166,6 +1235,15 @@ function splitSrc(text){
   }
   parts.push(buf);
   return parts.map(s => s.trim()).filter(Boolean);
+}
+// </split-rules>
+function renderGain(el, text, terms){
+  const parts = splitGain(text);
+  if (parts.length < 2){ renderText(el, text, terms); return; }
+  el.textContent = '';
+  const ul = document.createElement('ul'); ul.className = 'chunks';
+  for (const p of parts){ const li = document.createElement('li'); renderText(li, p, terms); ul.appendChild(li); }
+  el.appendChild(ul);
 }
 function renderSrc(el, text, terms){
   el.textContent = '';
@@ -1354,7 +1432,7 @@ function gotoItem(key, fromId){
     PERSON.mode='all';syncPersonalUI();apply();
   }
   if (!el.offsetParent){            // 目标被筛选藏起来了，先把筛选清掉再跳
-    state.q = ''; for (const d of DIMS) state[d].clear();
+    state.q = ''; for (const d of DIMS) state[d].clear(); state.dispute = false; state.todo = false;
     syncControls(); apply(); writeUrl();
     if (!el.offsetParent){ showHiddenPanel(); return; }
   }
@@ -1552,35 +1630,49 @@ function renderHiddenPanel(){
   document.getElementById('restore-all').hidden=total===0;
 }
 
-/* 只有上游同步后真实检测到新增标题才显示，空数据不展示入口 */
-function renderRecentUpdates(data){
+/* 最近新增与实质修订：日期取原项目的更新记录；新增回退数据只在没有上游记录时使用。 */
+function renderRecentUpdates(newData, updateData){
   const panel=document.getElementById('recent-updates'),list=document.getElementById('recent-list');
-  if(!data||data.version!==1||!Array.isArray(data.entries))return;
-  const cutoff=Date.now()-30*86400000;
-  const shown=[];
-  for(const row of data.entries){
-    if(!row||typeof row.key!=='string'||typeof row.addedAt!=='string')continue;
-    const date=Date.parse(row.addedAt);
-    if(!Number.isFinite(date)||date<cutoff||date>Date.now())continue;
-    const card=CARDS.find(c=>c.hiddenKey===row.key);
-    if(card)shown.push({card,date});
+  const cutoff=Date.now()-30*86400000,now=Date.now(),byKey=new Map();
+  const byPosition=new Map(CARDS.map(card=>[String(card.e.sec)+'-'+String(card.e.n),card]));
+  if(updateData&&updateData.items&&typeof updateData.items==='object'){
+    for(const [position,meta] of Object.entries(updateData.items)){
+      const card=byPosition.get(position);if(!card||!meta||(!meta.added&&!meta.changed))continue;
+      const stamp=meta.added||meta.changed;
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(stamp))continue;
+      const date=Date.parse(stamp+'T00:00:00+08:00');
+      if(!Number.isFinite(date)||date<cutoff||date>now)continue;
+      byKey.set(card.hiddenKey,{card,date,kind:meta.added?'新增':'修订',fields:Array.isArray(meta.fields)?meta.fields:[]});
+    }
   }
-  shown.sort((a,b)=>b.date-a.date);
+  if(newData&&newData.version===1&&Array.isArray(newData.entries)){
+    for(const item of newData.entries){
+      if(!item||typeof item.key!=='string'||typeof item.addedAt!=='string')continue;
+      const card=CARDS.find(c=>c.hiddenKey===item.key);if(!card||byKey.has(card.hiddenKey))continue;
+      const date=Date.parse(item.addedAt);
+      if(!Number.isFinite(date)||date<cutoff||date>now)continue;
+      byKey.set(card.hiddenKey,{card,date,kind:'新增',fields:[],fallback:true});
+    }
+  }
+  const shown=[...byKey.values()].sort((a,b)=>b.date-a.date);
   const fragment=document.createDocumentFragment();
-  for(const {card,date} of shown.slice(0,100)){
+  for(const {card,date,kind,fields,fallback} of shown.slice(0,100)){
     const row=document.createElement('div');row.className='recent-row';
-    const button=document.createElement('button');button.type='button';
-    button.dataset.newKey=card.hiddenKey;
+    const badge=document.createElement('span');badge.className='recent-kind '+(kind==='新增'?'is-new':'is-changed');badge.textContent=kind;
+    const button=document.createElement('button');button.type='button';button.dataset.newKey=card.hiddenKey;
     button.textContent='第 '+card.e.sec+' 章 · '+card.e.title;
-    const time=document.createElement('time');
-    time.dateTime=new Date(date).toISOString();time.textContent=new Date(date).toLocaleDateString('zh-CN',{month:'2-digit',day:'2-digit'});
-    row.append(button,time);fragment.appendChild(row);
+    if(kind==='修订'&&fields.length)button.title='修订栏位：'+fields.join('、');
+    if(fallback)button.title='日期为本站同步发现时间';
+    const time=document.createElement('time');time.dateTime=new Date(date).toISOString();
+    time.textContent=new Date(date).toLocaleDateString('zh-CN',{month:'2-digit',day:'2-digit'});
+    row.append(badge,button,time);fragment.appendChild(row);
   }
   list.replaceChildren(fragment);
   panel.hidden=shown.length===0;
   document.getElementById('recent-count').textContent=shown.length;
+  const note=panel.querySelector('.recent-body>p');
+  if(note&&shown.length>100)note.textContent='最近 30 天共 '+shown.length+' 条，以下列出最新 100 条。优先使用原项目的新增/修订日期；缺少记录时回退到本站同步发现时间。日期不是信息有效期。';
 }
-
 function restoreHidden(card){
   if (!HIDDEN.delete(card.hiddenKey)) return;
   saveHidden(); renderHiddenPanel(); apply();
@@ -1897,8 +1989,28 @@ function buildGlossary(){
 }
 
 /* ---------- 筛选状态 ---------- */
-const DIMS = ['sec','ratio','lens','grade','money','time','will'];
-const state = { q:'', sec:new Set(), ratio:new Set(), lens:new Set(), grade:new Set(), money:new Set(), time:new Set(), will:new Set(), dispute:false, todo:false };
+const DIMS = ['sec','ratio','lens','grade','money','time','will','upd','days'];
+const state = { q:'', sec:new Set(), ratio:new Set(), lens:new Set(), grade:new Set(), money:new Set(), time:new Set(), will:new Set(), upd:new Set(), days:new Set(), dispute:false, todo:false };
+let UPD = {};
+const ageOf = date => Math.max(0, Math.round((Date.now() - Date.parse(date+'T00:00:00+08:00')) / 864e5));
+function fitsUpd(e){
+  if(!state.upd.size&&!state.days.size)return true;
+  const u=e.upd;if(!u)return false;
+  if(state.upd.size&&!state.upd.has(u.kind))return false;
+  return !state.days.size||[...state.days].some(d=>u.age<=Number(d));
+}
+function applyUpdateData(data){
+  if(!data||typeof data.since!=='string'||!data.items||typeof data.items!=='object')return false;
+  UPD=data.items;
+  for(const card of CARDS){
+    const row=UPD[`${card.e.sec}-${card.e.n}`];
+    if(!row||(!row.added&&!row.changed)){delete card.e.upd;continue;}
+    const date=row.added||row.changed;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(Date.parse(date+'T00:00:00+08:00'))){delete card.e.upd;continue;}
+    card.e.upd={kind:row.added?'新增':'改过',date,age:ageOf(date),fields:Array.isArray(row.fields)?row.fields:[]};
+  }
+  return true;
+}
 function readUrl(){
   const p = new URLSearchParams(location.search);
   state.q = p.get('q') || '';
@@ -1911,7 +2023,10 @@ function writeUrl(){
   for (const d of DIMS) if (state[d].size) p.set(d, [...state[d]].join(','));
   if (state.dispute) p.set('dispute','1'); if (state.todo) p.set('todo','1');
   if (PERF.on) p.set('perf','1');
-  const qs = p.toString(); history.replaceState(null, '', (qs ? '?'+qs : location.pathname) + location.hash);
+  const qs = p.toString();
+  const hash = location.hash;
+  const validHash = hash && document.getElementById(hash.slice(1))?.offsetParent ? hash : '';
+  history.replaceState(history.state, '', (qs ? '?'+qs : location.pathname) + validHash);
 }
 function syncControls(){
   document.getElementById('q').value = state.q;
@@ -1925,9 +2040,9 @@ function syncFilterSummary(shown){
   const active = document.getElementById('active-filters');
   const fragment = document.createDocumentFragment();
   let count = 0;
-  const names = {sec:'章节',ratio:'性价比',lens:'换回',grade:'证据',money:'花钱',time:'时间',will:'毅力'};
+  const names = {sec:'章节',ratio:'性价比',lens:'换回',grade:'证据',money:'花钱',time:'时间',will:'毅力',upd:'更新',days:'时间'};
   const labels = {money:{'0':'不花钱','少':'少','多':'多'},time:{'少':'顺手','中':'几小时','多':'每天占用'},will:{'否':'不用','些':'一点','是':'很多'},
-    lens:{'死亡率':'寿命','金钱':'钱','时间':'时间精力','自由':'人身自由'}};
+    lens:{'死亡率':'寿命','金钱':'钱','时间':'时间精力','自由':'人身自由'},upd:{'新增':'新增','改过':'修订'},days:{'7':'7 天内','30':'30 天内'}};
   function add(dim, val, title){
     count++;
     const button = document.createElement('button'); button.type = 'button'; button.className = 'active-filter';
@@ -1966,8 +2081,8 @@ function renderCard(card, terms, key){
   renderText(f.cost, e.cost, terms);
   f.human.hidden = !e.human;
   if (e.human) renderText(f.human, e.human, terms);
-  renderText(f.gain, e.gain, terms);
-  renderText(f.note, e.note, terms);
+  renderGain(f.gain, e.gain, terms);
+  renderGain(f.note, e.note, terms);
   const nSrc = renderSrc(f.src, e.src, terms);
   f.srcN.textContent = nSrc > 1 ? ` · ${nSrc} 条` : '';
   const inBody = (e.title+e.human+e.cost+e.gain+e.note).toLowerCase();
@@ -1990,6 +2105,7 @@ function apply(){
     if (ok && state.money.size && !state.money.has(e.money)) ok = false;
     if (ok && state.time.size && !state.time.has(e.time)) ok = false;
     if (ok && state.will.size && !state.will.has(e.will)) ok = false;
+    if (ok && !fitsUpd(e)) ok = false;
     if (ok && state.dispute && !e.dispute) ok = false;
     if (ok && state.todo && !e.todo) ok = false;
     if (ok && terms.length && !terms.every(t => e.hay.includes(t))) ok = false;
@@ -2162,6 +2278,7 @@ function wire(){
       return;
     }
     if(dim==='sec')set.clear();
+    else if(dim==='days'){const on=!set.has(v);set.clear();if(on)set.add(v);}
     else set.has(v)?set.delete(v):set.add(v);
     apply();toTop();
   }));
@@ -2517,8 +2634,13 @@ document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !DM.mask
     status.remove();
     const t2 = performance.now(); build(sections); PERF.log('建 DOM', t2, CARDS.length + ' 张卡');
     buildGlossary(); readUrl(); wire(); syncPersonalUI(); apply();
-    if(EMBED)renderRecentUpdates(EMBED.recentEntries);
-    else readText('data/new-entries.json').then(JSON.parse).then(renderRecentUpdates).catch(()=>{});
+    const recentPromise=EMBED?Promise.resolve(EMBED.recentEntries??null):readText('data/new-entries.json').then(JSON.parse).catch(()=>null);
+    const updatePromise=EMBED?Promise.resolve(EMBED.updates??null):readText('data/entry-updates.json').then(JSON.parse).catch(()=>null);
+    Promise.all([recentPromise,updatePromise]).then(([recentData,updateData])=>{
+      applyUpdateData(updateData);
+      renderRecentUpdates(recentData,updateData);
+      apply();
+    }).catch(()=>{});
 
     PERF.mark(`DOM 节点 ${document.getElementsByTagName('*').length}，术语 ${GLOSS.length}`);
     if (location.hash){
