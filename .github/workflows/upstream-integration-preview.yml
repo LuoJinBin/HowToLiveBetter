@@ -1,0 +1,121 @@
+name: 临时上游功能浏览器集成验收
+on:
+  pull_request:
+    paths:
+      - index.html
+      - selfcheck.html
+      - .github/workflows/upstream-integration-preview.yml
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test original reader controls and upstream functions together
+        shell: bash
+        run: |
+          set -euo pipefail
+          BROWSER="$(command -v google-chrome || command -v chromium)"
+          python3 -m http.server 8765 >/tmp/http.log 2>&1 &
+          sleep 2
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          source=p.read_text()
+          injection="""
+          <script>
+          window.addEventListener('load',async()=>{
+            const delay=ms=>new Promise(r=>setTimeout(r,ms)),checks=[];
+            const ck=(value,label)=>checks.push([!!value,label]);
+            try{
+              for(let i=0;i<120;i++){if(Number(document.getElementById('tot').textContent)>700)break;await delay(100);}
+              const total=Number(document.getElementById('tot').textContent);
+              const current=()=>Number(document.getElementById('cnt').textContent);
+              ck(total>=765&&current()===total,'default all original entries');
+              ck(document.getElementById('personal-mode-switch').hidden,'opt-in personal mode remains off');
+              ck(document.querySelector('#f-sec [data-v="1"]'),'original sidebar exists');
+              ck(document.querySelector('a[href="selfcheck.html"]'),'selfcheck linked from reader');
+              for(let i=0;i<60&&!CARDS.some(c=>c.e.upd);i++)await delay(150);
+              ck(CARDS.some(c=>c.e.upd),'upstream date metadata loaded');
+              const updateButton=document.querySelector('[data-dim="upd"] [data-v="改过"]');
+              updateButton.click();
+              const filtered=current();
+              ck(filtered>0&&filtered<total,'modified item filter actually filters');
+              const days=document.querySelector('[data-dim="days"] [data-v="30"]');
+              days.click();
+              ck(current()>0&&current()<=filtered,'30-day condition works together');
+              document.getElementById('reset').click();
+              ck(current()===total,'clear filters resets correctly');
+              const card=CARDS.find(c=>c.e.sec==='1');
+              card.el.querySelector('.hide-item').click();
+              ck(current()===total-1,'old per-item hiding retained');
+              document.getElementById('hidden-nav').click();
+              ck(document.getElementById('hidden-manage').classList.contains('open'),'hidden drawer still opens');
+              document.getElementById('hidden-section-list').querySelector('.restore-item').click();
+              ck(current()===total,'restore old hiding works');
+              document.getElementById('hidden-close').click();
+              ck(!localStorage.getItem('howtolivebetter:personal:v1'),'no forced profile storage');
+              document.documentElement.dataset.readerIntegration=checks.every(z=>z[0])?'PASS':'FAIL';
+              document.documentElement.dataset.readerIntegrationDetails=checks.filter(z=>!z[0]).map(z=>z[1]).join(',');
+            }catch(e){
+              document.documentElement.dataset.readerIntegration='ERROR';
+              document.documentElement.dataset.readerIntegrationDetails=String(e.stack||e);
+            }
+          });
+          </script>
+          """
+          p.write_text(source.replace('</body>',injection+'</body>'))
+          p=Path('selfcheck.html');source=p.read_text()
+          injection="""
+          <script>
+          window.addEventListener('load',async()=>{
+            const delay=ms=>new Promise(r=>setTimeout(r,ms)),checks=[];
+            const ck=(value,label)=>checks.push([!!value,label]);
+            try{
+              for(let i=0;i<150&&document.getElementById('ask').hidden;i++)await delay(100);
+              ck(!document.getElementById('ask').hidden,'questionnaire loads from current data');
+              const qs=document.getElementById('qs');
+              ck(qs.querySelectorAll('button[data-k^="p:"]').length>=8,'demographic buttons exist');
+              for(const key of ['age','sex','kid']){
+                const option=qs.querySelector('button[data-k="p:'+key+'"]');
+                ck(!!option,'profile option '+key);
+                option?.click();
+              }
+              ck(qs.querySelectorAll('button[data-k]').length>=10,'adaptive question list');
+              let answered=0;
+              for(const b of [...qs.querySelectorAll('button[data-v="n"]')].slice(0,5)){
+                if(b.isConnected&&b.getAttribute('aria-pressed')==='false'){b.click();answered++;}
+              }
+              ck(answered>=1,'answered one of the suggested actions');
+              document.getElementById('go').click();
+              ck(!document.getElementById('out').hidden,'can view results');
+              ck(document.getElementById('todo').textContent.length>40,'result produces recommendations');
+              const copy=document.getElementById('copy-actions');
+              ck(!!copy&&document.getElementById('copy-text').value.includes('luojinbin.github.io'),'action list points to own site');
+              if(copy){
+                Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw new Error('no permission')}}});
+                copy.click();await delay(150);
+                ck(!document.getElementById('copy-fallback').hidden,'clipboard permission fallback works');
+              }
+              ck(!localStorage.getItem('howtolivebetter:hidden-items:v1'),'questionnaire cannot modify hide state');
+              document.documentElement.dataset.selfcheckIntegration=checks.every(z=>z[0])?'PASS':'FAIL';
+              document.documentElement.dataset.selfcheckIntegrationDetails=checks.filter(z=>!z[0]).map(z=>z[1]).join(',');
+            }catch(e){
+              document.documentElement.dataset.selfcheckIntegration='ERROR';
+              document.documentElement.dataset.selfcheckIntegrationDetails=String(e.stack||e);
+            }
+          });
+          </script>
+          """
+          p.write_text(source.replace('</body>',injection+'</body>'))
+          PY
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=35000 --window-size=1440,900 --dump-dom http://127.0.0.1:8765/ >/tmp/reader-dom.txt 2>/tmp/reader-errors.txt
+          grep -o 'data-reader-integration="[^"]*"' /tmp/reader-dom.txt || true
+          grep -o 'data-reader-integration-details="[^"]*"' /tmp/reader-dom.txt || true
+          grep -q 'data-reader-integration="PASS"' /tmp/reader-dom.txt
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=35000 --window-size=1440,900 --dump-dom http://127.0.0.1:8765/selfcheck.html >/tmp/selfcheck-dom.txt 2>/tmp/selfcheck-errors.txt
+          grep -o 'data-selfcheck-integration="[^"]*"' /tmp/selfcheck-dom.txt || true
+          grep -o 'data-selfcheck-integration-details="[^"]*"' /tmp/selfcheck-dom.txt || true
+          grep -q 'data-selfcheck-integration="PASS"' /tmp/selfcheck-dom.txt
+          echo UPSTREAM_INTEGRATION_BROWSER_PASS
