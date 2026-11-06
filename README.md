@@ -17,7 +17,7 @@
 [![阅读增强版](https://img.shields.io/badge/%E9%98%85%E8%AF%BB-%E5%A2%9E%E5%BC%BA%E7%89%88-356c60?style=flat-square)](https://luojinbin.github.io/HowToLiveBetter/)
 [![条目](https://img.shields.io/badge/%E6%9D%A1%E7%9B%AE-772%20%E6%9D%A1-18794e?style=flat-square)](#目录)
 [![证据分级](https://img.shields.io/badge/%E8%AF%81%E6%8D%AE%E5%88%86%E7%BA%A7-A%20497%20%C2%B7%20B%20223%20%C2%B7%20C%2052-915930?style=flat-square)](#证据分级)
-[![原始文献](https://img.shields.io/badge/%E5%8E%9F%E5%A7%8B%E6%96%87%E7%8C%AE-2595%20%E6%9D%A1%E9%93%BE%E6%8E%A5-565a5f?style=flat-square)](docs/核实记录/)
+[![原始文献](https://img.shields.io/badge/%E5%8E%9F%E5%A7%8B%E6%96%87%E7%8C%AE-2597%20%E6%9D%A1%E9%93%BE%E6%8E%A5-565a5f?style=flat-square)](docs/核实记录/)
 [![许可](https://img.shields.io/badge/%E6%AD%A3%E6%96%87-CC%20BY%204.0-565a5f?style=flat-square)](LICENSE-CONTENT)
 
 **[打开在线检索页](https://luojinbin.github.io/HowToLiveBetter/)** · [下载 PDF](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.pdf) · [下载 EPUB](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.epub) · [下载离线单文件（HTML）](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.html) · [下载 Anki 牌组](https://github.com/LuoJinBin/HowToLiveBetter/releases/download/epub-latest/HowToLiveBetter.apkg) · [生活自查](selfcheck.html) · [与原版的区别](EDITION.md) · [目录](#目录) · [术语表](#读懂数字术语表) · [核实记录](docs/核实记录/) · [结婚划不划算（长文）](docs/结婚划不划算.md) · [家庭应急装备清单（长文）](docs/家庭应急装备清单.md) · [遇到陌生人出事该不该停（长文）](docs/遇到陌生人出事该不该停.md) · [做平台要办哪些证（长文）](docs/做平台要办哪些证.md) · [生物钟和夜班（长文）](docs/生物钟和夜班.md)
